@@ -47,12 +47,9 @@ var Shortcuts4Js;
       utils,
       callbacks,
       helpers,
-      winLoadHandler,
       defaultOpts,
       winHopscotch,
       undefinedStr = 'undefined',
-      waitingToStart = false, // is a tour waiting for the document to finish
-      // loading so that it can start?
       hasJquery = Shortcuts4Js.jQuery || (window.jQuery) || (window.$ && window.$.fn),
       jQuery = Shortcuts4Js.jQuery || window.jQuery || window.$,
       hasSessionStorage = false,
@@ -96,17 +93,6 @@ var Shortcuts4Js;
         return Object.prototype.toString.call(obj) === '[object Array]';
       };
     }
-
-    /**
-     * Called when the page is done loading.
-     *
-     * @private
-     */
-    winLoadHandler = function () {
-      if (waitingToStart) {
-        winHopscotch.startTour();
-      }
-    };
 
     /**
      * utils
@@ -473,86 +459,6 @@ var Shortcuts4Js;
         return customI18N[key] || HopscotchI18N[key];
       },
 
-      // Tour session persistence for multi-page tours. Uses HTML5 sessionStorage if available, then
-      // falls back to using cookies.
-      //
-      // The following cookie-related logic is borrowed from:
-      // http://www.quirksmode.org/js/cookies.html
-
-      /**
-       * @private
-       */
-      setState: function (name, value, days) {
-        var expires = '',
-          date;
-
-        if (hasSessionStorage && isStorageWritable) {
-          try {
-            sessionStorage.setItem(name, value);
-          }
-          catch (err) {
-            isStorageWritable = false;
-            this.setState(name, value, days);
-          }
-        }
-        else {
-          if (hasSessionStorage) {
-            //Clear out existing sessionStorage key so the new value we set to cookie gets read.
-            //(If we're here, we've run into an error while trying to write to sessionStorage).
-            sessionStorage.removeItem(name);
-          }
-          if (days) {
-            date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = '; expires=' + date.toGMTString();
-          }
-          document.cookie = name + '=' + value + expires + '; path=/';
-        }
-      },
-
-      /**
-       * @private
-       */
-      getState: function (name) {
-        var nameEQ = name + '=',
-          ca = document.cookie.split(';'),
-          i,
-          c,
-          state;
-
-        //return value from session storage if we have it
-        if (hasSessionStorage) {
-          state = sessionStorage.getItem(name);
-          if (state) {
-            return state;
-          }
-        }
-
-        //else, try cookies
-        for (i = 0; i < ca.length; i++) {
-          c = ca[i];
-          while (c.charAt(0) === ' ') { c = c.substring(1, c.length); }
-          if (c.indexOf(nameEQ) === 0) {
-            state = c.substring(nameEQ.length, c.length);
-            break;
-          }
-        }
-
-        return state;
-      },
-
-      /**
-       * @private
-       */
-      clearState: function (name) {
-        if (hasSessionStorage) {
-          sessionStorage.removeItem(name);
-        }
-        else {
-          this.setState(name, '', -1);
-        }
-      },
-
       /**
        * Originally called it orientation, but placement is more intuitive.
        * Allowing both for now for backwards compatibility.
@@ -626,8 +532,6 @@ var Shortcuts4Js;
         return targetElmt.ownerDocument.defaultView.self === window.top;
       }
     };
-
-    utils.addEvtListener(window, 'load', winLoadHandler);
 
     callbacks = {
       next: [],
@@ -1657,7 +1561,6 @@ var Shortcuts4Js;
             self = this,
             step,
             origStep,
-            wasMultiPage,
             changeStepCb;
 
           bubble.hide();
@@ -1672,12 +1575,6 @@ var Shortcuts4Js;
           }
 
           origStep = step;
-          if (direction > 0) {
-            wasMultiPage = origStep.multipage;
-          }
-          else {
-            wasMultiPage = (currStepNum > 0 && currTour.steps[currStepNum - 1].multipage);
-          }
 
           /**
            * Callback for goToStepWithTarget
@@ -1707,14 +1604,6 @@ var Shortcuts4Js;
               return;
             }
 
-            if (wasMultiPage) {
-              // Update state for the next page
-              setStateHelper();
-
-              // Next step is on a different page, so no need to attempt to render it.
-              return;
-            }
-
             doShowFollowingStep = utils.valOrDefault(doShowFollowingStep, true);
 
             // If the onNext/onPrev callback returned false, halt the tour and
@@ -1728,7 +1617,7 @@ var Shortcuts4Js;
             }
           };
 
-          if (!wasMultiPage && getOption('skipIfNoElement')) {
+          if (getOption('skipIfNoElement')) {
             goToStepWithTarget(direction, function (stepNum) {
               changeStepCb.call(self, stepNum);
             });
@@ -1737,7 +1626,7 @@ var Shortcuts4Js;
             // only try incrementing once, and invoke error callback if no target is found
             currStepNum += direction;
             step = getCurrStep();
-            if (!utils.getStepTarget(step) && !wasMultiPage) {
+            if (!utils.getStepTarget(step)) {
               utils.invokeEventCallbacks('error');
               return this.endTour(true, false);
             }
@@ -1775,20 +1664,6 @@ var Shortcuts4Js;
           //this.resetDefaultOptions(); // reset all options so there are no surprises
           // TODO check number of config properties of tour
           _configure.call(this, tmpOpt, true);
-
-          // Get existing tour state, if it exists.
-          tourState = utils.getState(getOption('cookieName'));
-          if (tourState) {
-            tourStateValues = tourState.split(':');
-            cookieTourId = tourStateValues[0]; // selecting tour is not supported by this framework.
-            cookieTourStep = tourStateValues[1];
-
-            if (tourStateValues.length > 2) {
-              cookieSkippedSteps = tourStateValues[2].split(',');
-            }
-
-            cookieTourStep = parseInt(cookieTourStep, 10);
-          }
 
           return this;
         },
@@ -1869,18 +1744,7 @@ var Shortcuts4Js;
             }
           });
 
-          setStateHelper();
-        },
-
-        setStateHelper = function () {
-          var cookieVal = currTour.id + ':' + currStepNum,
-            skipedStepIndexes = winHopscotch.getSkippedStepsIndexes();
-
-          if (skipedStepIndexes && skipedStepIndexes.length > 0) {
-            cookieVal += ':' + skipedStepIndexes.join(',');
-          }
-
-          utils.setState(getOption('cookieName'), cookieVal, 1);
+          // setStateHelper();
         },
 
         /**
@@ -1953,13 +1817,6 @@ var Shortcuts4Js;
             throw new Error('Specified step number out of bounds.');
           }
           currStepNum = stepNum;
-        }
-
-        // If document isn't ready, wait for it to finish loading.
-        // (so that we can calculate positioning accurately)
-        if (!utils.documentIsReady()) {
-          waitingToStart = true;
-          return this;
         }
 
         if (typeof currStepNum === "undefined" && currTour.id === cookieTourId && typeof cookieTourStep !== undefinedStr) {
@@ -2093,9 +1950,7 @@ var Shortcuts4Js;
         cookieTourStep = undefined;
 
         bubble.hide();
-        if (clearState) {
-          utils.clearState(getOption('cookieName'));
-        }
+
         if (this.isActive) {
           this.isActive = false;
 
@@ -2285,20 +2140,6 @@ var Shortcuts4Js;
       };
 
       /**
-       * setCookieName
-       *
-       * Sets the cookie name (or sessionStorage name, if supported) used for multi-page
-       * tour persistence.
-       *
-       * @param {String} name The cookie name
-       * @returns {Object} Hopscotch
-       */
-      this.setCookieName = function (name) {
-        opt.cookieName = name;
-        return this;
-      };
-
-      /**
        * resetDefaultOptions
        *
        * Resets all configuration options to default.
@@ -2322,16 +2163,16 @@ var Shortcuts4Js;
         return this;
       };
 
-      /**
-       * hasState
-       *
-       * Returns state from a previous tour run, if it exists.
-       *
-       * @returns {String} State of previous tour run, or empty string if none exists.
-       */
-      this.getState = function () {
-        return utils.getState(getOption('cookieName'));
-      };
+      // /**
+      //  * hasState
+      //  *
+      //  * Returns state from a previous tour run, if it exists.
+      //  *
+      //  * @returns {String} State of previous tour run, or empty string if none exists.
+      //  */
+      // this.getState = function () {
+      //   return utils.getState(getOption('cookieName'));
+      // };
 
       /**
        * _configure
