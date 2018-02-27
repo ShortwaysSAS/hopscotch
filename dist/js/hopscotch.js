@@ -47,12 +47,9 @@ var Shortcuts4Js;
       utils,
       callbacks,
       helpers,
-      winLoadHandler,
       defaultOpts,
       winHopscotch,
       undefinedStr = 'undefined',
-      waitingToStart = false, // is a tour waiting for the document to finish
-      // loading so that it can start?
       hasJquery = Shortcuts4Js.jQuery || (window.jQuery) || (window.$ && window.$.fn),
       jQuery = Shortcuts4Js.jQuery || window.jQuery || window.$,
       hasSessionStorage = false,
@@ -96,17 +93,6 @@ var Shortcuts4Js;
         return Object.prototype.toString.call(obj) === '[object Array]';
       };
     }
-
-    /**
-     * Called when the page is done loading.
-     *
-     * @private
-     */
-    winLoadHandler = function () {
-      if (waitingToStart) {
-        winHopscotch.startTour();
-      }
-    };
 
     /**
      * utils
@@ -626,8 +612,6 @@ var Shortcuts4Js;
         return targetElmt.ownerDocument.defaultView.self === window.top;
       }
     };
-
-    utils.addEvtListener(window, 'load', winLoadHandler);
 
     callbacks = {
       next: [],
@@ -1938,13 +1922,6 @@ var Shortcuts4Js;
             throw new Error('Specified step number out of bounds.');
           }
           currStepNum = stepNum;
-        }
-
-        // If document isn't ready, wait for it to finish loading.
-        // (so that we can calculate positioning accurately)
-        if (!utils.documentIsReady()) {
-          waitingToStart = true;
-          return this;
         }
 
         if (typeof currStepNum === "undefined" && currTour.id === cookieTourId && typeof cookieTourStep !== undefinedStr) {
