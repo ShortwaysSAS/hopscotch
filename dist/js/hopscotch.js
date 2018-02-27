@@ -459,86 +459,6 @@ var Shortcuts4Js;
         return customI18N[key] || HopscotchI18N[key];
       },
 
-      // Tour session persistence for multi-page tours. Uses HTML5 sessionStorage if available, then
-      // falls back to using cookies.
-      //
-      // The following cookie-related logic is borrowed from:
-      // http://www.quirksmode.org/js/cookies.html
-
-      // /**
-      //  * @private
-      //  */
-      // setState: function (name, value, days) {
-      //   var expires = '',
-      //     date;
-
-      //   if (hasSessionStorage && isStorageWritable) {
-      //     try {
-      //       sessionStorage.setItem(name, value);
-      //     }
-      //     catch (err) {
-      //       isStorageWritable = false;
-      //       this.setState(name, value, days);
-      //     }
-      //   }
-      //   else {
-      //     if (hasSessionStorage) {
-      //       //Clear out existing sessionStorage key so the new value we set to cookie gets read.
-      //       //(If we're here, we've run into an error while trying to write to sessionStorage).
-      //       sessionStorage.removeItem(name);
-      //     }
-      //     if (days) {
-      //       date = new Date();
-      //       date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      //       expires = '; expires=' + date.toGMTString();
-      //     }
-      //     document.cookie = name + '=' + value + expires + '; path=/';
-      //   }
-      // },
-
-      // /**
-      //  * @private
-      //  */
-      // getState: function (name) {
-      //   var nameEQ = name + '=',
-      //     ca = document.cookie.split(';'),
-      //     i,
-      //     c,
-      //     state;
-
-      //   //return value from session storage if we have it
-      //   if (hasSessionStorage) {
-      //     state = sessionStorage.getItem(name);
-      //     if (state) {
-      //       return state;
-      //     }
-      //   }
-
-      //   //else, try cookies
-      //   for (i = 0; i < ca.length; i++) {
-      //     c = ca[i];
-      //     while (c.charAt(0) === ' ') { c = c.substring(1, c.length); }
-      //     if (c.indexOf(nameEQ) === 0) {
-      //       state = c.substring(nameEQ.length, c.length);
-      //       break;
-      //     }
-      //   }
-
-      //   return state;
-      // },
-
-      // /**
-      //  * @private
-      //  */
-      // clearState: function (name) {
-      //   if (hasSessionStorage) {
-      //     sessionStorage.removeItem(name);
-      //   }
-      //   else {
-      //     this.setState(name, '', -1);
-      //   }
-      // },
-
       /**
        * Originally called it orientation, but placement is more intuitive.
        * Allowing both for now for backwards compatibility.
@@ -1745,20 +1665,6 @@ var Shortcuts4Js;
           // TODO check number of config properties of tour
           _configure.call(this, tmpOpt, true);
 
-          // // Get existing tour state, if it exists.
-          // tourState = utils.getState(getOption('cookieName'));
-          // if (tourState) {
-          //   tourStateValues = tourState.split(':');
-          //   cookieTourId = tourStateValues[0]; // selecting tour is not supported by this framework.
-          //   cookieTourStep = tourStateValues[1];
-
-          //   if (tourStateValues.length > 2) {
-          //     cookieSkippedSteps = tourStateValues[2].split(',');
-          //   }
-
-          //   cookieTourStep = parseInt(cookieTourStep, 10);
-          // }
-
           return this;
         },
 
@@ -1840,17 +1746,6 @@ var Shortcuts4Js;
 
           // setStateHelper();
         },
-
-        // setStateHelper = function () {
-        //   var cookieVal = currTour.id + ':' + currStepNum,
-        //     skipedStepIndexes = winHopscotch.getSkippedStepsIndexes();
-
-        //   if (skipedStepIndexes && skipedStepIndexes.length > 0) {
-        //     cookieVal += ':' + skipedStepIndexes.join(',');
-        //   }
-
-        //   utils.setState(getOption('cookieName'), cookieVal, 1);
-        // },
 
         /**
          * init
@@ -2055,9 +1950,7 @@ var Shortcuts4Js;
         cookieTourStep = undefined;
 
         bubble.hide();
-        // if (clearState) {
-        //   utils.clearState(getOption('cookieName'));
-        // }
+
         if (this.isActive) {
           this.isActive = false;
 
