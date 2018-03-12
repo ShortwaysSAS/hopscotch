@@ -15,26 +15,15 @@
 * limitations under the License.
 */
 var Shortcuts4Js;
-(function (Shortcuts4Js) {
-  (function (context, factory) {
+(function (context) {
+  (function (factory) {
     'use strict';
-
-    if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define([], factory);
-    } else if (typeof exports === 'object') {
-      // Node/CommonJS
-      module.exports = factory();
-    } else {
-      var namespace = 'hopscotch';
-      // Browser globals
-      if (context[namespace]) {
-        // Hopscotch already exists.
-        return;
-      }
-      context[namespace] = factory();
+    var namespace = 'hopscotch';
+    if (context[namespace]) {
+      return;
     }
-  }(this, (function () {
+    context[namespace] = factory();
+  }((function () {
     var Hopscotch,
       HopscotchBubble,
       HopscotchCalloutManager,
@@ -2603,5 +2592,4 @@ return __p
     return winHopscotch;
 
   })));
-
 })(Shortcuts4Js || (Shortcuts4Js = {}));
