@@ -60,7 +60,7 @@ var Shortcuts4Js;
         sessionStorage.removeItem('hopscotch.test.storage');
         isStorageWritable = true;
       }
-    } catch (err) { }
+    } catch (err) {}
 
     defaultOpts = {
       smoothScroll: true,
@@ -110,8 +110,7 @@ var Shortcuts4Js;
 
         if (!domEl.className) {
           domEl.className = classToAdd;
-        }
-        else {
+        } else {
           classToAddArr = classToAdd.split(/\s+/);
           domClasses = ' ' + domEl.className + ' ';
           for (i = 0, len = classToAddArr.length; i < len; ++i) {
@@ -153,7 +152,9 @@ var Shortcuts4Js;
       hasClass: function (domEl, classToCheck) {
         var classes;
 
-        if (!domEl.className) { return false; }
+        if (!domEl.className) {
+          return false;
+        }
         classes = ' ' + domEl.className + ' ';
         return (classes.indexOf(' ' + classToCheck + ' ') !== -1);
       },
@@ -163,8 +164,12 @@ var Shortcuts4Js;
        */
       getPixelValue: function (val) {
         var valType = typeof val;
-        if (valType === 'number') { return val; }
-        if (valType === 'string') { return parseInt(val, 10); }
+        if (valType === 'number') {
+          return val;
+        }
+        if (valType === 'string') {
+          return parseInt(val, 10);
+        }
         return 0;
       },
 
@@ -208,8 +213,7 @@ var Shortcuts4Js;
           if (typeof arr[0] === 'string') {
             // Assume there are no nested arrays. This is the one and only callback.
             return utils.invokeCallbackArrayHelper(arr);
-          }
-          else { // assume an array
+          } else { // assume an array
             for (i = 0, len = arr.length; i < len; ++i) {
               utils.invokeCallback(arr[i]);
             }
@@ -228,8 +232,7 @@ var Shortcuts4Js;
         }
         if (typeof cb === 'string' && helpers[cb]) { // name of a helper
           return helpers[cb]();
-        }
-        else { // assuming array
+        } else { // assuming array
           return utils.invokeCallbackArray(cb);
         }
       },
@@ -263,8 +266,7 @@ var Shortcuts4Js;
         var scrollTop;
         if (typeof window.pageYOffset !== undefinedStr) {
           scrollTop = window.pageYOffset;
-        }
-        else {
+        } else {
           // Most likely IE <=8, which doesn't support pageYOffset
           scrollTop = document.documentElement.scrollTop;
         }
@@ -276,7 +278,7 @@ var Shortcuts4Js;
        */
       getIframeScrollTop: function (targetEl) {
         var targetElChain = utils.splitTargetChain(targetEl),
-        $element = jQuery(targetElChain[0]).contents().find('html, body');
+          $element = jQuery(targetElChain[0]).contents().find('html, body');
         return $element.scrollTop();
       },
 
@@ -287,8 +289,7 @@ var Shortcuts4Js;
         var scrollLeft;
         if (typeof window.pageXOffset !== undefinedStr) {
           scrollLeft = window.pageXOffset;
-        }
-        else {
+        } else {
           // Most likely IE <=8, which doesn't support pageXOffset
           scrollLeft = document.documentElement.scrollLeft;
         }
@@ -330,8 +331,7 @@ var Shortcuts4Js;
       evtPreventDefault: function (evt) {
         if (evt.preventDefault) {
           evt.preventDefault();
-        }
-        else if (event) {
+        } else if (event) {
           event.returnValue = false;
         }
       },
@@ -384,7 +384,7 @@ var Shortcuts4Js;
         if (document.querySelector) {
           try {
             return document.querySelector(target);
-          } catch (err) { }
+          } catch (err) {}
         }
         // Regex test for id. Following the HTML 4 spec for valid id formats.
         // (http://www.w3.org/TR/html4/types.html#type-id)
@@ -415,8 +415,7 @@ var Shortcuts4Js;
         if (typeof step.target === 'string') {
           //Just one target to test. Check and return its results.
           return utils.getStepTargetHelper(step.target);
-        }
-        else if (Array.isArray(step.target)) {
+        } else if (Array.isArray(step.target)) {
           // Multiple items to check. Check each and return the first success.
           // Assuming they are all strings.
           var i,
@@ -465,7 +464,8 @@ var Shortcuts4Js;
        */
       flipPlacement: function (step) {
         if (step.isRtl && !step._isFlipped) {
-          var props = ['orientation', 'placement'], prop, i;
+          var props = ['orientation', 'placement'],
+            prop, i;
           if (step.xOffset) {
             step.xOffset = -1 * this.getPixelValue(step.xOffset);
           }
@@ -588,12 +588,27 @@ var Shortcuts4Js;
         utils.flipPlacement(step);
         utils.normalizePlacement(step);
 
-        bubbleBoundingWidth = el.offsetWidth;
-        bubbleBoundingHeight = el.offsetHeight;
         utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
 
-        // SET POSITION
-        boundingRect = targetEl.getBoundingClientRect();
+        if (targetEl.tagName === "AREA") {
+          bubbleBoundingWidth = bubbleBoundingHeight = 0;
+          boundingRect = {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            height: 0,
+            width: 0,
+            x: 0,
+            y: 0
+          };
+        } else {
+          bubbleBoundingWidth = el.offsetWidth;
+          bubbleBoundingHeight = el.offsetHeight;
+
+          // SET POSITION
+          boundingRect = targetEl.getBoundingClientRect();
+        }
 
         function verticalLeftPosition() {
           return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
@@ -630,39 +645,38 @@ var Shortcuts4Js;
         // SET (OR RESET) ARROW OFFSETS
         if (step.arrowOffset !== 'center') {
           arrowOffset = utils.getPixelValue(step.arrowOffset);
-        }
-        else {
+        } else {
           arrowOffset = step.arrowOffset;
         }
         if (!arrowOffset) {
           arrowEl.style.top = '';
           arrowEl.style[arrowPos] = '';
-        }
-        else if (step.placement === 'top' || step.placement === 'bottom') {
+        } else if (step.placement === 'top' || step.placement === 'bottom') {
           arrowEl.style.top = '';
           if (arrowOffset === 'center') {
             arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
-          }
-          else {
+          } else {
             // Numeric pixel value
             arrowEl.style[arrowPos] = arrowOffset + 'px';
           }
-        }
-        else if (step.placement === 'left' || step.placement === 'right') {
+        } else if (step.placement === 'left' || step.placement === 'right') {
           arrowEl.style[arrowPos] = '';
           if (arrowOffset === 'center') {
             arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
-          }
-          else {
+          } else {
             // Numeric pixel value
             arrowEl.style.top = arrowOffset + 'px';
           }
         }
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
-        var offset = utils.isTargetElmtOnRoot(targetEl)
-          ? { top: 0, bottom: 0, left: 0, right: 0 }
-          : utils.calcIframeElmtAbsoluteOffset(step.target);
+        var offset = utils.isTargetElmtOnRoot(targetEl) ? {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+          } :
+          utils.calcIframeElmtAbsoluteOffset(step.target);
 
         // HORIZONTAL OFFSET
         if (step.xOffset === 'center') {
@@ -681,9 +695,8 @@ var Shortcuts4Js;
         if (!step.fixedElement && utils.isTargetElmtOnRoot(targetEl)) {
           top += utils.getScrollTop();
           left += utils.getScrollLeft();
-        }
-        else {
-          if(!step.fixedElement) {
+        } else {
+          if (!step.fixedElement) {
             top += utils.getIframeScrollTop(step.target);
           }
         }
@@ -718,8 +731,7 @@ var Shortcuts4Js;
         // Cache current step information.
         if (step) {
           this.currStep = step;
-        }
-        else if (this.currStep) {
+        } else if (this.currStep) {
           step = this.currStep;
         }
 
@@ -798,17 +810,14 @@ var Shortcuts4Js;
         // Use tour renderer if available, then the global customRenderer if defined.
         if (typeof tourSpecificRenderer === 'function') {
           el.innerHTML = tourSpecificRenderer(opts);
-        }
-        else if (typeof tourSpecificRenderer === 'string') {
+        } else if (typeof tourSpecificRenderer === 'string') {
           if (!winHopscotch.templates || (typeof winHopscotch.templates[tourSpecificRenderer] !== 'function')) {
             throw new Error('Bubble rendering failed - template "' + tourSpecificRenderer + '" is not a function.');
           }
           el.innerHTML = winHopscotch.templates[tourSpecificRenderer](opts);
-        }
-        else if (customRenderer) {
+        } else if (customRenderer) {
           el.innerHTML = customRenderer(opts);
-        }
-        else {
+        } else {
           if (!winHopscotch.templates || (typeof winHopscotch.templates[templateToUse] !== 'function')) {
             throw new Error('Bubble rendering failed - template "' + templateToUse + '" is not a function.');
           }
@@ -871,8 +880,7 @@ var Shortcuts4Js;
         var stepNumI18N = utils.getI18NString('stepNums');
         if (stepNumI18N && idx < stepNumI18N.length) {
           idx = stepNumI18N[idx];
-        }
-        else {
+        } else {
           idx = idx + 1;
         }
         return idx;
@@ -891,14 +899,11 @@ var Shortcuts4Js;
         // requires a bottom arrow.
         if (placement === 'top') {
           utils.addClass(this.arrowEl, 'down');
-        }
-        else if (placement === 'bottom') {
+        } else if (placement === 'bottom') {
           utils.addClass(this.arrowEl, 'up');
-        }
-        else if (placement === 'left') {
+        } else if (placement === 'left') {
           utils.addClass(this.arrowEl, 'right');
-        }
-        else if (placement === 'right') {
+        } else if (placement === 'right') {
           utils.addClass(this.arrowEl, 'left');
         }
       },
@@ -989,12 +994,23 @@ var Shortcuts4Js;
            * possible matches, the following priority order is applied:
            * hopscotch-cta, hopscotch-next, hopscotch-prev, hopscotch-close
            */
-          if (el === evt.currentTarget) { return null; }
-          if (utils.hasClass(el, 'hopscotch-cta')) { return 'cta'; }
-          if (utils.hasClass(el, 'hopscotch-next')) { return 'next'; }
-          if (utils.hasClass(el, 'hopscotch-prev')) { return 'prev'; }
-          if (utils.hasClass(el, 'hopscotch-close')) { return 'close'; }
-         /*else*/ return findMatchRecur(el.parentElement);
+          if (el === evt.currentTarget) {
+            return null;
+          }
+          if (utils.hasClass(el, 'hopscotch-cta')) {
+            return 'cta';
+          }
+          if (utils.hasClass(el, 'hopscotch-next')) {
+            return 'next';
+          }
+          if (utils.hasClass(el, 'hopscotch-prev')) {
+            return 'prev';
+          }
+          if (utils.hasClass(el, 'hopscotch-close')) {
+            return 'close';
+          }
+          /*else*/
+          return findMatchRecur(el.parentElement);
         }
 
         action = findMatchRecur(targetElement);
@@ -1009,14 +1025,11 @@ var Shortcuts4Js;
           if (this.currStep.onCTA) {
             utils.invokeCallback(this.currStep.onCTA);
           }
-        }
-        else if (action === 'next') {
+        } else if (action === 'next') {
           winHopscotch.nextStep(true);
-        }
-        else if (action === 'prev') {
+        } else if (action === 'prev') {
           winHopscotch.prevStep(true);
-        }
-        else if (action === 'close') {
+        } else if (action === 'close') {
           if (this.opt.isTourBubble) {
             var currStepNum = winHopscotch.getCurrStepNum(),
               currTour = winHopscotch.getCurrTour(),
@@ -1033,8 +1046,7 @@ var Shortcuts4Js;
               // Remove via the HopscotchCalloutManager.
               // removeCallout() calls HopscotchBubble.destroy internally.
               winHopscotch.getCalloutManager().removeCallout(this.opt.id);
-            }
-            else {
+            } else {
               this.destroy();
             }
           }
@@ -1121,8 +1133,7 @@ var Shortcuts4Js;
         //Finally, append our new bubble to body once the DOM is ready.
         if (utils.documentIsReady()) {
           document.body.appendChild(el);
-        }
-        else {
+        } else {
           // Moz, webkit, Opera
           if (document.addEventListener) {
             appendToBody = function () {
@@ -1195,8 +1206,7 @@ var Shortcuts4Js;
               utils.invokeCallback(opt.onShow);
             }
           });
-        }
-        else {
+        } else {
           throw new Error('Must specify a callout id.');
         }
         return callout;
@@ -1241,7 +1251,9 @@ var Shortcuts4Js;
 
         callouts[id] = null;
         calloutOpts[id] = null;
-        if (!callout) { return; }
+        if (!callout) {
+          return;
+        }
 
         callout.destroy();
       };
@@ -1357,8 +1369,7 @@ var Shortcuts4Js;
 
           if (!currTour || currStepNum < 0 || currStepNum >= currTour.steps.length) {
             step = null;
-          }
-          else {
+          } else {
             step = currTour.steps[currStepNum];
           }
 
@@ -1386,34 +1397,35 @@ var Shortcuts4Js;
          */
         adjustWindowScroll = function (cb) {
           // jQuery is required
-          if(!hasJquery){
+          if (!hasJquery) {
             return;
           }
           var doScroll = function (targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, cb) {
 
             var scrollIncr,
-            scrollTimeout,
-            scrollTimeoutFn;
+              scrollTimeout,
+              scrollTimeoutFn;
             var $target;
-            if(isTargetToScrollAnIFrame && jQueryTargetToScroll) {
-              if(!previousIframe){
+            if (isTargetToScrollAnIFrame && jQueryTargetToScroll) {
+              if (!previousIframe) {
                 $target = jQuery(jQueryTargetToScroll).contents().find('body, html');
-              }
-              else {
+              } else {
                 $target = previousIframe.contents().find(jQueryTargetToScroll).contents().find('body, html');
               }
-            }
-            else {
+            } else {
               $target = jQuery(jQueryTargetToScroll || 'body, html');
             }
 
             $target
-            .animate({ scrollTop: scrollToVal }, getOption('scrollDuration'))
-            .promise()
-            .then(function() {
-              if(typeof cb === "function")
-                cb();
-            });
+              .animate({
+                scrollTop: scrollToVal
+              }, getOption('scrollDuration'))
+              .promise()
+              .then(function () {
+                if (typeof cb === "function") {
+                  cb();
+                }
+              });
           };
 
           var bubble = getBubble(),
@@ -1430,53 +1442,52 @@ var Shortcuts4Js;
             targetElBottom = targetBounds.bottom + utils.getScrollTop();
 
           var arrayLength = targetElChain.length,
-          i = 0,
-          jQueryTargetToScroll,
-          isTargetToScrollAnIFrame,
-          previousJQueryElement, 
-          previousIframe;
-          
+            i = 0,
+            jQueryTargetToScroll,
+            isTargetToScrollAnIFrame,
+            previousJQueryElement,
+            previousIframe;
 
-          targetElChain.forEach(function(element) {
-              // Calculate the current viewport top and bottom
-              var targetTop = 0;
-              var windowTop = utils.getScrollTop();
-              var windowBottom = windowTop + utils.getWindowHeight();
-              
-              // Call bubble.show for the last element only
-              var callback = i !== arrayLength - 1 ? undefined : cb;
 
-              // First element only
-              if(i === 0) {
-                targetTop = jQuery(element).offset().top - getOption('scrollTopMargin');
+          targetElChain.forEach(function (element) {
+            // Calculate the current viewport top and bottom
+            var targetTop = 0;
+            var windowTop = utils.getScrollTop();
+            var windowBottom = windowTop + utils.getWindowHeight();
+
+            // Call bubble.show for the last element only
+            var callback = i !== arrayLength - 1 ? undefined : cb;
+
+            // First element only
+            if (i === 0) {
+              targetTop = jQuery(element).offset().top - getOption('scrollTopMargin');
+            } else { // Iframes
+              if (!previousJQueryElement) { //First iframe
+                previousJQueryElement = jQuery(jQueryTargetToScroll).contents().find(element)[0];
+
+              } else { // Other iframes
+                previousJQueryElement = previousJQueryElement.contents().find(element)[0];
               }
-              else { // Iframes
-                if(!previousJQueryElement){ //First iframe
-                  previousJQueryElement = jQuery(jQueryTargetToScroll).contents().find(element)[0];
-                  
-                } else { // Other iframes
-                  previousJQueryElement = previousJQueryElement.contents().find(element)[0];
-                }
-                targetTop = previousJQueryElement.offsetTop;
-                previousJQueryElement = jQuery(previousJQueryElement);
-              }
+              targetTop = previousJQueryElement.offsetTop;
+              previousJQueryElement = jQuery(previousJQueryElement);
+            }
 
-              // This is our final target scroll value.
-              var scrollToVal = targetTop;
-              
-              var targetBottom = targetTop;
+            // This is our final target scroll value.
+            var scrollToVal = targetTop;
 
-              // For iFrames. Every target to scroll is an iframe except the first
-              isTargetToScrollAnIFrame = i!== 0;
-              doScroll(targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, callback);
-              
-              if(i > 0){
-                previousIframe = jQuery(jQueryTargetToScroll);
-              }
-              jQueryTargetToScroll = targetElChain[i];
+            var targetBottom = targetTop;
 
-              i++;
-              
+            // For iFrames. Every target to scroll is an iframe except the first
+            isTargetToScrollAnIFrame = i !== 0;
+            doScroll(targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, callback);
+
+            if (i > 0) {
+              previousIframe = jQuery(jQueryTargetToScroll);
+            }
+            jQueryTargetToScroll = targetElChain[i];
+
+            i++;
+
           }, this);
         },
 
@@ -1512,8 +1523,7 @@ var Shortcuts4Js;
                 }
                 // We're done! Return the step number via the callback.
                 cb(currStepNum);
-              }
-              else {
+              } else {
                 //mark this step as skipped, since its target wasn't found
                 skippedSteps[currStepNum] = true;
                 // Haven't found a valid target yet. Recursively call
@@ -1525,12 +1535,10 @@ var Shortcuts4Js;
 
             if (step.delay) {
               setTimeout(goToStepFn, step.delay);
-            }
-            else {
+            } else {
               goToStepFn();
             }
-          }
-          else {
+          } else {
             cb(-1); // signal that we didn't find any step with a valid target
           }
         },
@@ -1581,8 +1589,7 @@ var Shortcuts4Js;
             if (doCallbacks) {
               if (direction > 0) {
                 doShowFollowingStep = utils.invokeEventCallbacks('next', origStep.onNext);
-              }
-              else {
+              } else {
                 doShowFollowingStep = utils.invokeEventCallbacks('prev', origStep.onPrev);
               }
             }
@@ -1599,8 +1606,7 @@ var Shortcuts4Js;
             // don't show the next step.
             if (doShowFollowingStep) {
               this.showStep(stepNum);
-            }
-            else {
+            } else {
               // Halt tour (but don't clear state)
               this.endTour(false);
             }
@@ -1610,8 +1616,7 @@ var Shortcuts4Js;
             goToStepWithTarget(direction, function (stepNum) {
               changeStepCb.call(self, stepNum);
             });
-          }
-          else if (currStepNum + direction >= 0 && currStepNum + direction < currTour.steps.length) {
+          } else if (currStepNum + direction >= 0 && currStepNum + direction < currTour.steps.length) {
             // only try incrementing once, and invoke error callback if no target is found
             currStepNum += direction;
             step = getCurrStep();
@@ -1690,8 +1695,7 @@ var Shortcuts4Js;
             if (getOption('skipIfNoElement')) {
               goToStepWithTarget(1, cb);
               return;
-            }
-            else {
+            } else {
               currStepNum = -1;
               cb(currStepNum);
             }
@@ -1722,8 +1726,7 @@ var Shortcuts4Js;
             // when done adjusting window scroll, call showBubble helper fn
             if (adjustScroll) {
               adjustWindowScroll(showBubble);
-            }
-            else {
+            } else {
               showBubble();
             }
 
@@ -1815,8 +1818,7 @@ var Shortcuts4Js;
               skippedSteps[cookieSkippedSteps[i]] = true;
             }
           }
-        }
-        else if (!currStepNum) {
+        } else if (!currStepNum) {
           currStepNum = 0;
         }
 
@@ -1847,8 +1849,7 @@ var Shortcuts4Js;
             if (getOption('skipIfNoElement')) {
               self.nextStep(false);
             }
-          }
-          else {
+          } else {
             self.showStep(stepNum);
           }
         });
@@ -1878,8 +1879,7 @@ var Shortcuts4Js;
           setTimeout(function () {
             showStepHelper(stepNum);
           }, step.delay);
-        }
-        else {
+        } else {
           showStepHelper(stepNum);
         }
         return this;
@@ -2031,7 +2031,10 @@ var Shortcuts4Js;
        */
       this.listen = function (evtType, cb, isTourCb) {
         if (evtType) {
-          callbacks[evtType].push({ cb: cb, fromTour: isTourCb });
+          callbacks[evtType].push({
+            cb: cb,
+            fromTour: isTourCb
+          });
         }
         return this;
       };
@@ -2088,8 +2091,7 @@ var Shortcuts4Js;
                   --len;
                 }
               }
-            }
-            else {
+            } else {
               callbacks[evt] = [];
             }
           }
@@ -2312,8 +2314,7 @@ var Shortcuts4Js;
         if (typeOfRender === 'string') {
           templateToUse = render;
           customRenderer = undefined;
-        }
-        else if (typeOfRender === 'function') {
+        } else if (typeOfRender === 'function') {
           customRenderer = render;
         }
         return this;
