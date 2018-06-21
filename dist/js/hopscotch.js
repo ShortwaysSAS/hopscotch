@@ -15,8 +15,8 @@
 * limitations under the License.
 */
 var Shortcuts4Js;
-(function (Shortcuts4Js) {
-  (function (context, factory) {
+(function (context) {
+  (function (factory) {
     'use strict';
 
     if (typeof define === 'function' && define.amd) {
@@ -34,7 +34,7 @@ var Shortcuts4Js;
       }
       context[namespace] = factory();
     }
-  }(this, (function () {
+  }((function () {
     var Hopscotch,
       HopscotchBubble,
       HopscotchCalloutManager,
