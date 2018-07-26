@@ -695,12 +695,28 @@ var Shortcuts4Js;
         utils.flipPlacement(step);
         utils.normalizePlacement(step);
 
-        bubbleBoundingWidth = el.offsetWidth;
-        bubbleBoundingHeight = el.offsetHeight;
         utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
 
         // SET POSITION
-        boundingRect = targetEl.getBoundingClientRect();
+        if (targetEl.tagName === "AREA") {
+          bubbleBoundingWidth = bubbleBoundingHeight = 0;
+          boundingRect = {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            height: 0,
+            width: 0,
+            x: 0,
+            y: 0
+          };
+        } else {
+          bubbleBoundingWidth = el.offsetWidth;
+          bubbleBoundingHeight = el.offsetHeight;
+
+          // SET POSITION
+          boundingRect = targetEl.getBoundingClientRect();
+        }
 
         function verticalLeftPosition() {
           return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
