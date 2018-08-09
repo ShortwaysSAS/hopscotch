@@ -616,7 +616,7 @@ var Shortcuts4Js;
        * @private
        */
       splitTargetChain: function (targets) {
-        return targets.split('//://');
+		return targets.split('//://').map(function (element) { return element.replace(':contains(', ':not([class^="hopscotch-bubble"]):contains(') });
       },
 
       /**
