@@ -8,3 +8,4 @@ _SpecRunner.html
 jsconfig.json
 npm-debug.log
 *.zip
+package-lock.json

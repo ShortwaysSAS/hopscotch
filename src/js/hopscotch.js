@@ -3,10 +3,7 @@ var Shortcuts4Js;
   (function (factory) {
     'use strict';
 
-    if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define([], factory);
-    } else if (typeof exports === 'object') {
+    if (typeof exports === 'object') {
       // Node/CommonJS
       module.exports = factory();
     } else {
@@ -1531,16 +1528,16 @@ var Shortcuts4Js;
           i = 0,
           jQueryTargetToScroll,
           isTargetToScrollAnIFrame,
-          previousJQueryElement, 
+          previousJQueryElement,
           previousIframe;
-          
+
 
           targetElChain.forEach(function(element) {
               // Calculate the current viewport top and bottom
               var targetTop = 0;
               var windowTop = utils.getScrollTop();
               var windowBottom = windowTop + utils.getWindowHeight();
-              
+
               // Call bubble.show for the last element only
               var callback = i !== arrayLength - 1 ? undefined : cb;
 
@@ -1551,7 +1548,7 @@ var Shortcuts4Js;
               else { // Iframes
                 if(!previousJQueryElement){ //First iframe
                   previousJQueryElement = jQuery(jQueryTargetToScroll).contents().find(element)[0];
-                  
+
                 } else { // Other iframes
                   previousJQueryElement = previousJQueryElement.contents().find(element)[0];
                 }
@@ -1561,20 +1558,20 @@ var Shortcuts4Js;
 
               // This is our final target scroll value.
               var scrollToVal = targetTop;
-              
+
               var targetBottom = targetTop;
 
               // For iFrames. Every target to scroll is an iframe except the first
               isTargetToScrollAnIFrame = i!== 0;
               doScroll(targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, callback);
-              
+
               if(i > 0){
                 previousIframe = jQuery(jQueryTargetToScroll);
               }
               jQueryTargetToScroll = targetElChain[i];
 
               i++;
-              
+
           }, this);
         },
 
