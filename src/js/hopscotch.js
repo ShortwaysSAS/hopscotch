@@ -1484,95 +1484,11 @@ var Shortcuts4Js;
           if(!hasJquery){
             return;
           }
-          var doScroll = function (targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, cb) {
+          var targetEl = utils.getStepTarget(getCurrStep());
 
-            var scrollIncr,
-            scrollTimeout,
-            scrollTimeoutFn;
-            var $target;
-            if(isTargetToScrollAnIFrame && jQueryTargetToScroll) {
-              if(!previousIframe){
-                $target = jQuery(jQueryTargetToScroll).contents().find('body, html');
-              }
-              else {
-                $target = previousIframe.contents().find(jQueryTargetToScroll).contents().find('body, html');
-              }
-            }
-            else {
-              $target = jQuery(jQueryTargetToScroll || 'body, html');
-            }
+          targetEl && targetEl.scrollIntoView({block: "center"});
 
-            $target
-            .animate({ scrollTop: scrollToVal }, getOption('scrollDuration'))
-            .promise()
-            .then(function() {
-              if(typeof cb === "function")
-                cb();
-            });
-          };
-
-          var bubble = getBubble(),
-            // Calculate the bubble element top and bottom position
-            bubbleEl = bubble.element,
-            bubbleTop = utils.getPixelValue(bubbleEl.style.top),
-            bubbleBottom = bubbleTop + utils.getPixelValue(bubbleEl.offsetHeight),
-
-            // Calculate the target element top and bottom position
-            targetEl = utils.getStepTarget(getCurrStep()),
-            targetElChain = utils.splitTargetChain(getCurrStep().target),
-            targetBounds = targetEl.getBoundingClientRect(),
-            targetElTop = targetBounds.top + utils.getScrollTop(),
-            targetElBottom = targetBounds.bottom + utils.getScrollTop();
-
-          var arrayLength = targetElChain.length,
-          i = 0,
-          jQueryTargetToScroll,
-          isTargetToScrollAnIFrame,
-          previousJQueryElement,
-          previousIframe;
-
-
-          targetElChain.forEach(function(element) {
-              // Calculate the current viewport top and bottom
-              var targetTop = 0;
-              var windowTop = utils.getScrollTop();
-              var windowBottom = windowTop + utils.getWindowHeight();
-
-              // Call bubble.show for the last element only
-              var callback = i !== arrayLength - 1 ? undefined : cb;
-
-              // First element only
-              if(i === 0) {
-                targetTop = jQuery(element).offset().top - getOption('scrollTopMargin');
-              }
-              else { // Iframes
-                if(!previousJQueryElement){ //First iframe
-                  previousJQueryElement = jQuery(jQueryTargetToScroll).contents().find(element)[0];
-
-                } else { // Other iframes
-                  previousJQueryElement = previousJQueryElement.contents().find(element)[0];
-                }
-                targetTop = previousJQueryElement.offsetTop;
-                previousJQueryElement = jQuery(previousJQueryElement);
-              }
-
-              // This is our final target scroll value.
-              var scrollToVal = targetTop;
-
-              var targetBottom = targetTop;
-
-              // For iFrames. Every target to scroll is an iframe except the first
-              isTargetToScrollAnIFrame = i!== 0;
-              doScroll(targetTop, targetBottom, windowTop, windowBottom, scrollToVal, isTargetToScrollAnIFrame, jQueryTargetToScroll, previousIframe, callback);
-
-              if(i > 0){
-                previousIframe = jQuery(jQueryTargetToScroll);
-              }
-              jQueryTargetToScroll = targetElChain[i];
-
-              i++;
-
-          }, this);
+          cb && cb();
         },
 
         /**
