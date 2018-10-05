@@ -1502,7 +1502,7 @@ var Shortcuts4Js;
           }
           var targetEl = utils.getStepTarget(getCurrStep());
 
-          targetEl && targetEl.scrollIntoView({block: "center"});
+          targetEl && targetEl.scrollIntoView({ block: "center", behavior: getOption('smoothScroll') ? "smooth" : "instant" });
 
           cb && cb();
         },
