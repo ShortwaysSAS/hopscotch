@@ -1706,7 +1706,7 @@ var Shortcuts4Js;
             targetEl.scrollIntoView(step.placement !== "top");
             cb();
           } else {
-            utils.scrollIntoView(targetEl, { block: "center", behavior: "smooth" }, cb);
+            utils.scrollIntoView(targetEl, cb);
           }
         },
 
