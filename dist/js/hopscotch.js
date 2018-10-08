@@ -772,7 +772,7 @@ var Shortcuts4Js;
        * @private
        */
       splitTargetChain: function (targets) {
-		return targets.split('//://').map(function (element) { return element.replace(':contains(', ':not([class^="hopscotch-bubble"]):contains(') });
+		    return targets.split('//://').map(function (element) { return element.replace(':contains(', ':not([class^="hopscotch-bubble"]):contains(') });
       },
 
       /**
@@ -1722,7 +1722,7 @@ var Shortcuts4Js;
             targetEl.scrollIntoView(step.placement !== "top");
             cb();
           } else {
-            utils.scrollIntoView(targetEl, { block: "center", behavior: "smooth" }, cb);
+            utils.scrollIntoView(targetEl, cb);
           }
         },
 
