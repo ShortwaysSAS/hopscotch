@@ -816,6 +816,17 @@ var Shortcuts4Js;
             parent = parent.defaultView || parent.ownerWindow;
           }
         }
+      },
+
+      /**
+       * Used to check if an element is visible in the DOM with or without jQuery
+       */
+      isVisible: function (target) {
+        if (hasJquery) {
+          return jQuery(target).is(':visible');
+        } else {
+          return target.offsetParent !== null;
+        }
       }
     };
 
@@ -1579,7 +1590,13 @@ var Shortcuts4Js;
             callout = callouts[calloutId];
             opts = calloutOpts[calloutId];
             if (callout && opts) {
-              callout.setPosition(opts);
+              var target = utils.getStepTarget(opts);
+              if (target && utils.isVisible(target)) {
+                callout.show();
+                callout.setPosition(opts);
+              } else {
+                callout.hide();
+              }
             }
           }
         }
