@@ -1875,7 +1875,11 @@ var Shortcuts4Js;
             step = getCurrStep();
             if (!utils.getStepTarget(step) && !wasMultiPage) {
               utils.invokeEventCallbacks('error');
-              return this.endTour(true, false, true);
+              if (step.showNextButton) {
+                return this.endTour(true, false, true);
+              } else {
+                return this.endTour(true, false);
+              }
             }
             changeStepCb.call(this, currStepNum);
           } else if (currStepNum + direction === currTour.steps.length) {
