@@ -1632,6 +1632,7 @@ var Shortcuts4Js;
         calloutMgr,
         opt,
         currTour,
+        currTourEnded,
         currStepNum,
         skippedSteps = {},
         cookieTourId,
@@ -1703,7 +1704,7 @@ var Shortcuts4Js;
         getCurrStep = function () {
           var step;
 
-          if (!currTour || currStepNum < 0 || currStepNum >= currTour.steps.length) {
+          if (!currTour || currTourEnded || currStepNum < 0 || currStepNum >= currTour.steps.length) {
             step = null;
           }
           else {
@@ -1890,7 +1891,7 @@ var Shortcuts4Js;
             step = getCurrStep();
             if (!utils.getStepTarget(step) && !wasMultiPage) {
               utils.invokeEventCallbacks('error');
-              return this.endTour(true, false);
+              return this.endTour(true, false, true);
             }
             changeStepCb.call(this, currStepNum);
           } else if (currStepNum + direction === currTour.steps.length) {
@@ -2070,6 +2071,7 @@ var Shortcuts4Js;
           skippedSteps = {},
           self = this;
 
+        currTourEnded = false;
         // loadTour if we are calling startTour directly. (When we call startTour
         // from window onLoad handler, we'll use currTour)
         if (!currTour) {
@@ -2215,7 +2217,7 @@ var Shortcuts4Js;
        * @param {Boolean} doCallbacks Flag for invoking 'onEnd' callbacks. Defaults to true.
        * @returns {Object} Hopscotch
        */
-      this.endTour = function (clearState, doCallbacks) {
+      this.endTour = function (clearState, doCallbacks, endOnError) {
         var bubble = getBubble(),
           currentStep;
 
@@ -2241,7 +2243,11 @@ var Shortcuts4Js;
         this.resetDefaultOptions();
         destroyBubble();
 
-        currTour = null;
+        if (endOnError) {
+          currTourEnded = true;
+        } else {
+          currTour = null;
+        }
 
         return this;
       };
