@@ -2059,10 +2059,9 @@ var Shortcuts4Js;
           skippedSteps = {},
           self = this;
 
-        currTourEnded = false;
         // loadTour if we are calling startTour directly. (When we call startTour
         // from window onLoad handler, we'll use currTour)
-        if (!currTour) {
+        if (!currTour || currTourEnded) {
 
           // Sanity check! Is there a tour?
           if (!tour) {
@@ -2074,6 +2073,7 @@ var Shortcuts4Js;
             throw new Error('Tour ID is using an invalid format. Use alphanumeric, underscores, and/or hyphens only. First character must be a letter.');
           }
 
+          currTourEnded = false;
           currTour = tour;
           loadTour.call(this, tour);
 
