@@ -1770,12 +1770,10 @@ var Shortcuts4Js;
             const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
             const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
             const adjustScroll = !isElementOnTopScreen && !isElementOnBottomScreen || isBubbleTop && isElementOnBottomScreen || !isBubbleTop && isElementOnTopScreen;
-            if (adjustScroll) {
-              window.setTimeout(function () {
-                window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2)
-              }, 750)
-            }
             cb();
+            if (adjustScroll) {
+              window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
+            }
           } else {
             utils.scrollIntoView(targetEl, cb);
           }
