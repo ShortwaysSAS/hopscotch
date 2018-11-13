@@ -1028,8 +1028,7 @@ var Shortcuts4Js;
         }
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
-        var offset = utils.isTargetElmtOnRoot(targetEl) ?
-          {
+        var offset = utils.isTargetElmtOnRoot(targetEl) ? {
             top: 0,
             bottom: 0,
             left: 0,
@@ -1765,18 +1764,17 @@ var Shortcuts4Js;
 
           if (isIE && getOption('compatMode')) {
             //align target top by default or bottom if step bubble displayed on top
-            // const isBubbleTop = step.placement === "top";
-            // const isTargetElmtInViewport = utils.elementInViewport(targetEl);
-            // targetEl.scrollIntoView(!isBubbleTop);
-            // if (!isTargetElmtInViewport) {
-            //   var timeoutId = window.setTimeout(function () {
-            //     window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
-            //     window.clearTimeout(timeoutId);
-            //   }, 1000);
-            // }
-            const targetPosition = jQuery(step.target).position();
-            const adjustedTopPosition = targetPosition.top - 250;
-            window.scrollTo(targetPosition.left, adjustedTopPosition > 0 ? adjustedTopPosition : 0);
+            const isBubbleTop = step.placement === "top";
+            targetEl.scrollIntoView(!isBubbleTop);
+            const targetElPosition = jQuery(targetEl).position();
+            const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
+            const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
+            const adjustScroll = !isElementOnTopScreen && !isElementOnBottomScreen || isBubbleTop && isElementOnBottomScreen || !isBubbleTop && isElementOnTopScreen;
+            if (adjustScroll) {
+              window.setTimeout(function () {
+                window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2)
+              }, 750)
+            }
             cb();
           } else {
             utils.scrollIntoView(targetEl, cb);
