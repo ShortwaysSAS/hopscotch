@@ -990,26 +990,57 @@ var Shortcuts4Js;
         } else {
           arrowOffset = step.arrowOffset;
         }
-        if (!arrowOffset) {
-          arrowEl.style.top = '';
-          arrowEl.style[arrowPos] = '';
-        } else if (step.placement === 'top' || step.placement === 'bottom') {
-          arrowEl.style.top = '';
-          if (arrowOffset === 'center') {
-            arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
+        if (step.placement === 'top' || step.placement === 'bottom') {
+          if (step.placement === 'top') {
+            arrowEl.style.top = '';
+            arrowEl.style.bottom = '-39px';
           } else {
-            // Numeric pixel value
+            arrowEl.style.top = '-22px';
+            arrowEl.style.bottom = '';
+          }
+          if (!arrowOffset) {
+            arrowEl.style.left = '10px';
+          } else if (arrowOffset === 'center') {
+            arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
+          } else if (arrowOffset) {
             arrowEl.style[arrowPos] = arrowOffset + 'px';
           }
         } else if (step.placement === 'left' || step.placement === 'right') {
-          arrowEl.style[arrowPos] = '';
-          if (arrowOffset === 'center') {
-            arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
+          if (step.placement === 'left') {
+            arrowEl.style.left = '';
+            arrowEl.style.right = '-39px';
           } else {
-            // Numeric pixel value
+            arrowEl.style.left = '-22px';
+            arrowEl.style.right = '';
+          }
+          if (!arrowOffset) {
+            arrowEl.style.top = '10px';
+          } else if (arrowOffset === 'center') {
+            arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
+          } else if (arrowOffset) {
             arrowEl.style.top = arrowOffset + 'px';
           }
         }
+        // if (!arrowOffset) {
+        //   arrowEl.style.top = '';
+        //   arrowEl.style[arrowPos] = '';
+        // } else if (step.placement === 'top' || step.placement === 'bottom') {
+        //   arrowEl.style.top = '';
+        //   if (arrowOffset === 'center') {
+        //     arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
+        //   } else {
+        //     // Numeric pixel value
+        //     arrowEl.style[arrowPos] = arrowOffset + 'px';
+        //   }
+        // } else if (step.placement === 'left' || step.placement === 'right') {
+        //   arrowEl.style[arrowPos] = '';
+        //   if (arrowOffset === 'center') {
+        //     arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
+        //   } else {
+        //     // Numeric pixel value
+        //     arrowEl.style.top = arrowOffset + 'px';
+        //   }
+        // }
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
         var offset = utils.isTargetElmtOnRoot(targetEl) ? {
