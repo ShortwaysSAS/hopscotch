@@ -1037,26 +1037,6 @@ var Shortcuts4Js;
             arrowEl.style.top = arrowOffset + 'px';
           }
         }
-        // if (!arrowOffset) {
-        //   arrowEl.style.top = '';
-        //   arrowEl.style[arrowPos] = '';
-        // } else if (step.placement === 'top' || step.placement === 'bottom') {
-        //   arrowEl.style.top = '';
-        //   if (arrowOffset === 'center') {
-        //     arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
-        //   } else {
-        //     // Numeric pixel value
-        //     arrowEl.style[arrowPos] = arrowOffset + 'px';
-        //   }
-        // } else if (step.placement === 'left' || step.placement === 'right') {
-        //   arrowEl.style[arrowPos] = '';
-        //   if (arrowOffset === 'center') {
-        //     arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
-        //   } else {
-        //     // Numeric pixel value
-        //     arrowEl.style.top = arrowOffset + 'px';
-        //   }
-        // }
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
         var offset = utils.isTargetElmtOnRoot(targetEl) ? {
