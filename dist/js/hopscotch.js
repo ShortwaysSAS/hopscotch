@@ -235,7 +235,7 @@ var Shortcuts4Js;
         sessionStorage.removeItem('hopscotch.test.storage');
         isStorageWritable = true;
       }
-    } catch (err) {}
+    } catch (err) { }
 
     defaultOpts = {
       smoothScroll: true,
@@ -570,7 +570,7 @@ var Shortcuts4Js;
         if (document.querySelector) {
           try {
             return document.querySelector(target);
-          } catch (err) {}
+          } catch (err) { }
         }
         // Regex test for id. Following the HTML 4 spec for valid id formats.
         // (http://www.w3.org/TR/html4/types.html#type-id)
@@ -1040,11 +1040,11 @@ var Shortcuts4Js;
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
         var offset = utils.isTargetElmtOnRoot(targetEl) ? {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-          } :
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
+        } :
           utils.calcIframeElmtAbsoluteOffset(step.target);
 
         // HORIZONTAL OFFSET
@@ -1194,9 +1194,10 @@ var Shortcuts4Js;
         }
 
         // Find arrow among new child elements.
-        children = el.children;
-        numChildren = children.length;
-        for (i = 0; i < numChildren; i++) {
+        var node;
+        var children = el.children;
+        var numChildren = children.length;
+        for (var i = 0; i < numChildren; i++) {
           node = children[i];
 
           if (utils.hasClass(node, 'hopscotch-arrow')) {
@@ -1431,10 +1432,6 @@ var Shortcuts4Js;
           resizeCooldown = false, // for updating after window resize
           onWinResize,
           appendToBody,
-          children,
-          numChildren,
-          node,
-          i,
           currTour,
           opt;
 
@@ -2387,7 +2384,7 @@ var Shortcuts4Js;
           i,
           len;
 
-        for (i = 0, len = evtCallbacks.length; i < len; ++i) {
+        for (var i = 0, len = evtCallbacks.length; i < len; ++i) {
           if (evtCallbacks[i].cb === cb) {
             evtCallbacks.splice(i, 1);
           }
