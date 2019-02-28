@@ -750,8 +750,10 @@ var Shortcuts4Js;
       actualOffset: function ($element) {
         var elOffset = $element.offset();
         if ($element.is('iframe')) {
-          elOffset.top += (parseInt($element.css('border-top'), 10) || 0) + (parseInt($element.css('padding-top'), 10) || 0) - $element.contents().scrollTop();
-          elOffset.left += (parseInt($element.css('border-left'), 10) || 0) + (parseInt($element.css('padding-left'), 10) || 0) - $element.contents().scrollLeft();
+          var elementCss = window.getComputedStyle($element[0]);
+          var elementContents = $element.contents();
+          elOffset.top += (parseInt(elementCss.borderTopWidth, 10) || 0) + (parseInt(elementCss.paddingTop, 10) || 0) - elementContents.scrollTop();
+          elOffset.left += (parseInt(elementCss.borderLeftWidth, 10) || 0) + (parseInt(elementCss.paddingLeft, 10) || 0) - elementContents.scrollLeft();
         }
         return elOffset;
       },
