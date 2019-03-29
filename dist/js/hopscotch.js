@@ -206,7 +206,8 @@ var Shortcuts4Js;
       });
 
       if (idle) {
-        animate(parent);
+        //animate(parent);
+        end(COMPLETE)
       }
     }
 
@@ -943,6 +944,8 @@ var Shortcuts4Js;
           el = this.element,
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
+
+        if(!targetEl) return;
 
         utils.flipPlacement(step);
         utils.normalizePlacement(step);

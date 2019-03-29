@@ -45,8 +45,6 @@ var Shortcuts4Js;
         right: 'left'
       };
 
-
-
     var COMPLETE = 'complete',
       CANCELED = 'canceled';
 
@@ -928,6 +926,8 @@ var Shortcuts4Js;
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
+        if(!targetEl) return;
+
         utils.flipPlacement(step);
         utils.normalizePlacement(step);
 
@@ -1754,9 +1754,8 @@ var Shortcuts4Js;
           const step = getCurrStep();
           const targetEl = utils.getStepTarget(step);
 
-          const isIE = !!document.documentMode;
-
-          if (isIE && getOption('compatMode')) {
+          //S#6402 new device option scrollImmediate || compatibility mode for IE
+          if (getOption('scrollImmediate') || (!!document.documentMode && getOption('compatMode'))) {
             //align target top by default or bottom if step bubble displayed on top
             const isBubbleTop = step.placement === "top";
             targetEl.scrollIntoView(!isBubbleTop);
