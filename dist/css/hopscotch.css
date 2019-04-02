@@ -446,6 +446,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container .hopscotch-bubble-arrow-b
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.up {
   top: -22px;
   left: 10px;
+  padding: 0;
+  background: transparent;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.up .hopscotch-bubble-arrow {
   border-bottom: 17px solid #ffffff;
@@ -463,6 +465,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.up .hopscotch-bubble-arro
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.down {
   bottom: -39px;
   left: 10px;
+  padding: 0;
+  background: transparent;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-arrow {
   border-top: 17px solid #ffffff;
@@ -480,6 +484,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.left {
   top: 10px;
   left: -22px;
+  padding: 0;
+  background: transparent;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.left .hopscotch-bubble-arrow {
   border-bottom: 17px solid transparent;
@@ -498,6 +504,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.left .hopscotch-bubble-ar
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.right {
   top: 10px;
   right: -39px;
+  padding: 0;
+  background: transparent;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.right .hopscotch-bubble-arrow {
   border-bottom: 17px solid transparent;
