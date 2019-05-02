@@ -413,12 +413,16 @@ div.hopscotch-bubble .hopscotch-bubble-close {
   text-indent: -9999px;
   width: 8px;
   height: 8px;
+  min-width: auto;
   top: 0;
   right: 0;
 }
 div.hopscotch-bubble .hopscotch-bubble-close.hide,
 div.hopscotch-bubble .hopscotch-bubble-close.hide-all {
   display: none;
+}
+div.hopscotch-bubble .hopscotch-bubble-close:hover {
+  box-shadow: none;
 }
 div.hopscotch-bubble .hopscotch-bubble-number {
   background: transparent url(../img/sprite-green.png) 0 0 no-repeat;
