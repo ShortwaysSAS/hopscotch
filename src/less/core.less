@@ -95,6 +95,7 @@ div.hopscotch-bubble {
 
     width: 8px;
     height: 8px;
+    min-width: 8px;
 
     top: 0;
     right: 0;
@@ -102,6 +103,10 @@ div.hopscotch-bubble {
     &.hide,
     &.hide-all {
       display: none;
+    }
+
+    &:hover {
+      box-shadow: none;
     }
   }
 
