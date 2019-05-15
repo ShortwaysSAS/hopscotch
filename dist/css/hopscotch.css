@@ -255,6 +255,7 @@ div.hopscotch-bubble .hopscotch-nav-button {
   zoom: 1;
   *display: inline;
   vertical-align: middle;
+  text-transform: none;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
