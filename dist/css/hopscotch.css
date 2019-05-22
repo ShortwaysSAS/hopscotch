@@ -350,6 +350,12 @@ div.hopscotch-bubble b,
 div.hopscotch-bubble strong {
   font-weight: bold;
 }
+div.hopscotch-bubble u {
+  text-decoration: underline;
+}
+div.hopscotch-bubble i {
+  font-style: italic;
+}
 div.hopscotch-bubble.animate {
   -moz-transition-property: top, left;
   -moz-transition-duration: 1s;
