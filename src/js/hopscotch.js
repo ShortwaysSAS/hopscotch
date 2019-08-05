@@ -907,6 +907,8 @@ var Shortcuts4Js;
 
       currStep: undefined,
 
+      hasAlreadyBeenDisplayed: false,
+
       /**
        * setPosition
        *
@@ -927,12 +929,12 @@ var Shortcuts4Js;
           arrowPos = step.isRtl ? 'right' : 'left';
 
         if (!targetEl || !jQuery(targetEl).is(':visible')) {
-          if(this.isShowing){
+          if (this.isShowing) {
             this.hide();
           }
           return;
         }
-        else if(!this.isShowing){
+        else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
           this.show();
         }
 
@@ -1289,6 +1291,7 @@ var Shortcuts4Js;
       },
 
       show: function () {
+        this.isShowing = true;
         var self = this,
           fadeClass = 'fade-in-' + this._getArrowDirection(),
           fadeDur = 1000;
@@ -1301,7 +1304,7 @@ var Shortcuts4Js;
         setTimeout(function () {
           utils.removeClass(self.element, fadeClass);
         }, fadeDur);
-        this.isShowing = true;
+        this.hasAlreadyBeenDisplayed = true;
         return this;
       },
 
