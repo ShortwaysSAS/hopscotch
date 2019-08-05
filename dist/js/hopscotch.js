@@ -942,8 +942,7 @@ var Shortcuts4Js;
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
-        if (!targetEl) return;
-        if (!jQuery(targetEl).is(':visible')) {
+        if (!targetEl || !jQuery(targetEl).is(':visible')) {
           if(this.isShowing){
             this.hide();
           }
