@@ -907,6 +907,8 @@ var Shortcuts4Js;
 
       currStep: undefined,
 
+      hasAlreadyBeenDisplayed: false,
+
       /**
        * setPosition
        *
@@ -926,7 +928,15 @@ var Shortcuts4Js;
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
-        if(!targetEl) return;
+        if (!targetEl || !jQuery(targetEl).is(':visible')) {
+          if (this.isShowing) {
+            this.hide();
+          }
+          return;
+        }
+        else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
+          this.show();
+        }
 
         utils.flipPlacement(step);
         utils.normalizePlacement(step);
@@ -962,8 +972,6 @@ var Shortcuts4Js;
           var targetElStyle = window.getComputedStyle(targetEl);
           return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
         }
-
-        var targetElStyle = window.getComputedStyle(targetEl);
 
         switch (step.placement) {
           case 'top':
@@ -1283,6 +1291,7 @@ var Shortcuts4Js;
       },
 
       show: function () {
+        this.isShowing = true;
         var self = this,
           fadeClass = 'fade-in-' + this._getArrowDirection(),
           fadeDur = 1000;
@@ -1295,7 +1304,7 @@ var Shortcuts4Js;
         setTimeout(function () {
           utils.removeClass(self.element, fadeClass);
         }, fadeDur);
-        this.isShowing = true;
+        this.hasAlreadyBeenDisplayed = true;
         return this;
       },
 
