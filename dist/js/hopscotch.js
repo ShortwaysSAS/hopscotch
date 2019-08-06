@@ -1353,6 +1353,12 @@ var Shortcuts4Js;
           el.parentNode.removeChild(el);
         }
         utils.removeEvtListener(el, 'click', this.clickCb);
+        this.hasAlreadyBeenDisplayed = false;
+      },
+
+      reset: function () {
+        this.hide();
+        this.hasAlreadyBeenDisplayed = false;
       },
 
       _handleBubbleClick: function (evt) {
@@ -1867,7 +1873,7 @@ var Shortcuts4Js;
             wasMultiPage,
             changeStepCb;
 
-          bubble.hide();
+          bubble.reset();
 
           doCallbacks = utils.valOrDefault(doCallbacks, true);
 
