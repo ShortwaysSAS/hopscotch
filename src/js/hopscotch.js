@@ -217,7 +217,7 @@ var Shortcuts4Js;
         sessionStorage.removeItem('hopscotch.test.storage');
         isStorageWritable = true;
       }
-    } catch (err) { }
+    } catch (err) {}
 
     defaultOpts = {
       smoothScroll: true,
@@ -552,7 +552,7 @@ var Shortcuts4Js;
         if (document.querySelector) {
           try {
             return document.querySelector(target);
-          } catch (err) { }
+          } catch (err) {}
         }
         // Regex test for id. Following the HTML 4 spec for valid id formats.
         // (http://www.w3.org/TR/html4/types.html#type-id)
@@ -933,8 +933,7 @@ var Shortcuts4Js;
             this.hide();
           }
           return;
-        }
-        else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
+        } else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
           this.show();
         }
 
@@ -1034,11 +1033,11 @@ var Shortcuts4Js;
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
         var offset = utils.isTargetElmtOnRoot(targetEl) ? {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        } :
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+          } :
           utils.calcIframeElmtAbsoluteOffset(step.target);
 
         // HORIZONTAL OFFSET
@@ -1455,7 +1454,12 @@ var Shortcuts4Js;
         this.opt = opt;
 
         //Apply classes to bubble. Add "animated" for fade css animation
-        el.className = 'hopscotch-bubble animated';
+        if (!!document.documentMode && opt.instantFadeIn) {
+          el.className = 'hopscotch-bubble';
+        } else {
+          el.className = 'hopscotch-bubble animated';
+        }
+
         if (!opt.isTourBubble) {
           utils.addClass(el, 'hopscotch-callout no-number');
         } else {
