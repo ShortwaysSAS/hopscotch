@@ -1780,7 +1780,7 @@ var Shortcuts4Js;
          * @private
          * @param {Function} cb Callback to invoke after done scrolling.
          */
-        adjustWindowScroll = function (callback) {
+        adjustWindowScroll = function (cb) {
           // jQuery is required
           if (!hasJquery) {
             return;
@@ -1794,12 +1794,13 @@ var Shortcuts4Js;
             //align target top by default or bottom if step bubble displayed on top
             const isBubbleTop = step.placement === "top";
             targetEl.scrollIntoView(!isBubbleTop);
-            callback();
+            cb();
 
+            //S#7079 Do not perform adjustScroll if 
             if (getOption('doNotAdjustScroll')) {
               return;
             }
-            
+
             const targetElPosition = jQuery(targetEl).position();
             const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
             const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
@@ -1807,9 +1808,9 @@ var Shortcuts4Js;
             if (adjustScroll) {
               window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
             }
-
+            
           } else {
-            utils.scrollIntoView(targetEl, callback);
+            utils.scrollIntoView(targetEl, cb);
           }
         },
 
