@@ -1796,7 +1796,7 @@ var Shortcuts4Js;
             targetEl.scrollIntoView(!isBubbleTop);
             cb();
 
-            //S#7079 Do not perform adjustScroll if 
+            //S#7079 Do not perform adjustScroll
             if (getOption('doNotAdjustScroll')) {
               return;
             }
