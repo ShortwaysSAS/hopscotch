@@ -276,7 +276,8 @@ div.hopscotch-bubble .hopscotch-nav-button:active {
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) inset;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) inset;
 }
-div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next,
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-bbl-close {
   border-color: #1b5480;
   color: #fff;
   margin: 0 0 0 10px;
@@ -290,7 +291,8 @@ div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next {
   background-image: -o-linear-gradient(top, #287bbc 0%, #23639a 100%);
   background-image: linear-gradient(top, #287bbc 0%, #23639a 100%);
 }
-div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next:hover {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next:hover,
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-bbl-close:hover {
   background-color: #2672ae;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#2672ae', endColorstr='#1e4f7e');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2672ae), color-stop(100%, #1e4f7e));
