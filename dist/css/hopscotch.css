@@ -276,7 +276,8 @@ div.hopscotch-bubble .hopscotch-nav-button:active {
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) inset;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) inset;
 }
-div.hopscotch-bubble .hopscotch-nav-button.next {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next,
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-bbl-close {
   border-color: #1b5480;
   color: #fff;
   margin: 0 0 0 10px;
@@ -290,7 +291,8 @@ div.hopscotch-bubble .hopscotch-nav-button.next {
   background-image: -o-linear-gradient(top, #287bbc 0%, #23639a 100%);
   background-image: linear-gradient(top, #287bbc 0%, #23639a 100%);
 }
-div.hopscotch-bubble .hopscotch-nav-button.next:hover {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-next:hover,
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-bbl-close:hover {
   background-color: #2672ae;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#2672ae', endColorstr='#1e4f7e');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #2672ae), color-stop(100%, #1e4f7e));
@@ -299,7 +301,7 @@ div.hopscotch-bubble .hopscotch-nav-button.next:hover {
   background-image: -o-linear-gradient(top, #2672ae 0%, #1e4f7e 100%);
   background-image: linear-gradient(top, #2672ae 0%, #1e4f7e 100%);
 }
-div.hopscotch-bubble .hopscotch-nav-button.prev {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-prev {
   border-color: #a7a7a7;
   color: #444;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
@@ -311,7 +313,7 @@ div.hopscotch-bubble .hopscotch-nav-button.prev {
   background-image: -o-linear-gradient(top, #f2f2f2 0%, #e9e9e9 100%);
   background-image: linear-gradient(top, #f2f2f2 0%, #e9e9e9 100%);
 }
-div.hopscotch-bubble .hopscotch-nav-button.prev:hover {
+div.hopscotch-bubble .hopscotch-nav-button.hopscotch-prev:hover {
   background-color: #e8e8e8;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE8E8E8', endColorstr='#FFA9A9A9');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e8e8e8), color-stop(13%, #e3e3e3), color-stop(32%, #d7d7d7), color-stop(71%, #b9b9b9), color-stop(100%, #a9a9a9));

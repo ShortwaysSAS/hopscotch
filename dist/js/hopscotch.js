@@ -2776,19 +2776,19 @@ __p += '<div class="hopscotch-content">' +
  } ;
 __p += '\r\n  </div>\r\n  <div class="hopscotch-actions">\r\n    ';
  if(buttons.showPrev){ ;
-__p += '<button class="hopscotch-nav-button prev hopscotch-prev">' +
+__p += '<button class="hopscotch-nav-button hopscotch-prev">' +
 ((__t = ( i18n.prevBtn )) == null ? '' : __t) +
 '</button>';
  } ;
 __p += '\r\n    ';
  if(buttons.showCTA){ ;
-__p += '<button class="hopscotch-nav-button next hopscotch-cta">' +
+__p += '<button class="hopscotch-nav-button hopscotch-cta">' +
 ((__t = ( buttons.ctaLabel )) == null ? '' : __t) +
 '</button>';
  } ;
 __p += '\r\n    ';
  if(buttons.showNext){ ;
-__p += '<button class="hopscotch-nav-button next hopscotch-next">' +
+__p += '<button class="hopscotch-nav-button hopscotch-next">' +
 ((__t = ( i18n.nextBtn )) == null ? '' : __t) +
 '</button>';
  } ;
