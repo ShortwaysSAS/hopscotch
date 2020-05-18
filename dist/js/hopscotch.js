@@ -1471,9 +1471,9 @@ var Shortcuts4Js;
 
         //Apply classes to bubble. Add "animated" for fade css animation
         if (!!document.documentMode && opt.instantFadeIn) {
-          el.className = 'hopscotch-bubble';
+          el.className = 'shortways hopscotch-bubble';
         } else {
-          el.className = 'hopscotch-bubble animated';
+          el.className = 'shortways hopscotch-bubble animated';
         }
 
         if (!opt.isTourBubble) {
@@ -2745,60 +2745,60 @@ function print() { __p += __j.call(arguments, '') }
     return str;
   }
 ;
-__p += '\r\n';
+__p += '\n';
 
 var i18n = data.i18n;
 var buttons = data.buttons;
 var step = data.step;
 var tour = data.tour;
 ;
-__p += '\r\n<div class="hopscotch-bubble-container" style="width: ' +
+__p += '\n<div class="hopscotch-bubble-container" style="width: ' +
 ((__t = ( step.width )) == null ? '' : __t) +
 'px; padding: ' +
 ((__t = ( step.padding )) == null ? '' : __t) +
-'px;">\r\n  ';
+'px;">\n  ';
  if(tour.isTour){ ;
 __p += '<span class="hopscotch-bubble-number">' +
 ((__t = ( i18n.stepNum )) == null ? '' : __t) +
 '</span>';
  } ;
-__p += '\r\n  <div class="hopscotch-bubble-content">\r\n    ';
+__p += '\n  <div class="hopscotch-bubble-content">\n    ';
  if(step.title !== ''){ ;
 __p += '<h3 class="hopscotch-title">' +
 ((__t = ( optEscape(step.title, tour.unsafe) )) == null ? '' : __t) +
 '</h3>';
  } ;
-__p += '\r\n    ';
+__p += '\n    ';
  if(step.content  !== ''){ ;
 __p += '<div class="hopscotch-content">' +
 ((__t = ( optEscape(step.content, tour.unsafe) )) == null ? '' : __t) +
 '</div>';
  } ;
-__p += '\r\n  </div>\r\n  <div class="hopscotch-actions">\r\n    ';
+__p += '\n  </div>\n  <div class="hopscotch-actions">\n    ';
  if(buttons.showPrev){ ;
 __p += '<button class="hopscotch-nav-button hopscotch-prev">' +
 ((__t = ( i18n.prevBtn )) == null ? '' : __t) +
 '</button>';
  } ;
-__p += '\r\n    ';
+__p += '\n    ';
  if(buttons.showCTA){ ;
 __p += '<button class="hopscotch-nav-button hopscotch-cta">' +
 ((__t = ( buttons.ctaLabel )) == null ? '' : __t) +
 '</button>';
  } ;
-__p += '\r\n    ';
+__p += '\n    ';
  if(buttons.showNext){ ;
 __p += '<button class="hopscotch-nav-button hopscotch-next">' +
 ((__t = ( i18n.nextBtn )) == null ? '' : __t) +
 '</button>';
  } ;
-__p += '\r\n  </div>\r\n  ';
+__p += '\n  </div>\n  ';
  if(buttons.showClose){ ;
 __p += '<button class="hopscotch-bubble-close hopscotch-close">' +
 ((__t = ( i18n.closeTooltip )) == null ? '' : __t) +
 '</button>';
  } ;
-__p += '\r\n</div>\r\n<div class="hopscotch-bubble-arrow-container hopscotch-arrow">\r\n  <div class="hopscotch-bubble-arrow-border"></div>\r\n  <div class="hopscotch-bubble-arrow"></div>\r\n</div>\r\n';
+__p += '\n</div>\n<div class="hopscotch-bubble-arrow-container hopscotch-arrow">\n  <div class="hopscotch-bubble-arrow-border"></div>\n  <div class="hopscotch-bubble-arrow"></div>\n</div>\n';
 return __p
 };
     }.call(winHopscotch));
