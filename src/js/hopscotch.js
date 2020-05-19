@@ -1455,9 +1455,9 @@ var Shortcuts4Js;
 
         //Apply classes to bubble. Add "animated" for fade css animation
         if (!!document.documentMode && opt.instantFadeIn) {
-          el.className = 'shortways hopscotch-bubble';
+          el.className = 'shortways-hopscotch hopscotch-bubble';
         } else {
-          el.className = 'shortways hopscotch-bubble animated';
+          el.className = 'shortways-hopscotch hopscotch-bubble animated';
         }
 
         if (!opt.isTourBubble) {
