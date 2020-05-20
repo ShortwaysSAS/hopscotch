@@ -49,8 +49,6 @@
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
       // loading so that it can start?
-      hasJquery = !!(window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn)),
-      jQuery = window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
       hasSessionStorage = false,
       isStorageWritable = false,
       document = window.document,
@@ -62,6 +60,16 @@
 
     var COMPLETE = 'complete',
       CANCELED = 'canceled';
+
+    function hasJquery() {
+      return !!(window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn))
+    }
+
+    function jQuery(element, target) {
+      return window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery(element, target)
+        || window.jQuery(element, target)
+        || window.$(element, target)
+    }
 
     function raf(task) {
       if ('requestAnimationFrame' in window) {
@@ -552,7 +560,7 @@
         if (result) {
           return result;
         }
-        if (hasJquery) {
+        if (hasJquery()) {
           var splittedChain = this.splitTargetChain(target);
           result = jQuery(splittedChain[0]);
           for (var i = 1; i < splittedChain.length; i++) {
@@ -845,7 +853,7 @@
        * Used to check if an element is visible in the DOM with or without jQuery
        */
       isVisible: function (target) {
-        if (hasJquery) {
+        if (hasJquery()) {
           return jQuery(target).is(':visible');
         } else {
           return target.offsetParent !== null;
@@ -1781,7 +1789,7 @@
          */
         adjustWindowScroll = function (cb) {
           // jQuery is required
-          if (!hasJquery) {
+          if (!hasJquery()) {
             return;
           }
 
