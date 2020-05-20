@@ -1,4 +1,3 @@
-var ShortwaysAssistant;
 (function (context) {
   (function (factory) {
     'use strict';
@@ -34,8 +33,8 @@ var ShortwaysAssistant;
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
       // loading so that it can start?
-      hasJquery = !!(ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn)),
-      jQuery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
+      hasJquery = !!(window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn)),
+      jQuery = window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
       hasSessionStorage = false,
       isStorageWritable = false,
       document = window.document,
@@ -2705,4 +2704,4 @@ var ShortwaysAssistant;
 
   })));
 
-})(ShortwaysAssistant || (ShortwaysAssistant = {}));
+})(window.ShortwaysAssistant || (window.ShortwaysAssistant = {}));
