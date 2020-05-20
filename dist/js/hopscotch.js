@@ -14,7 +14,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-var ShortwaysAssistant;
 (function (context) {
   (function (factory) {
     'use strict';
@@ -50,8 +49,8 @@ var ShortwaysAssistant;
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
       // loading so that it can start?
-      hasJquery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || (window.jQuery) || (window.$ && window.$.fn),
-      jQuery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
+      hasJquery = !!(window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn)),
+      jQuery = window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
       hasSessionStorage = false,
       isStorageWritable = false,
       document = window.document,
@@ -2807,4 +2806,4 @@ return __p
 
   })));
 
-})(ShortwaysAssistant || (ShortwaysAssistant = {}));
+})(window.ShortwaysAssistant || (window.ShortwaysAssistant = {}));
