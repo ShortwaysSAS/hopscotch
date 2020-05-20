@@ -1,4 +1,4 @@
-var Shortcuts4Js;
+var ShortwaysAssistant;
 (function (context) {
   (function (factory) {
     'use strict';
@@ -34,8 +34,8 @@ var Shortcuts4Js;
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
       // loading so that it can start?
-      hasJquery = Shortcuts4Js.jQuery || (window.jQuery) || (window.$ && window.$.fn),
-      jQuery = Shortcuts4Js.jQuery || window.jQuery || window.$,
+      hasJquery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || (window.jQuery) || (window.$ && window.$.fn),
+      jQuery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
       hasSessionStorage = false,
       isStorageWritable = false,
       document = window.document,
@@ -2705,4 +2705,4 @@ var Shortcuts4Js;
 
   })));
 
-})(Shortcuts4Js || (Shortcuts4Js = {}));
+})(ShortwaysAssistant || (ShortwaysAssistant = {}));
