@@ -34,7 +34,7 @@ var ShortwaysAssistant;
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
       // loading so that it can start?
-      hasJquery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || (window.jQuery) || (window.$ && window.$.fn),
+      hasJquery = !!(ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn)),
       jQuery = ShortwaysAssistant.defaultSelector && ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || window.$,
       hasSessionStorage = false,
       isStorageWritable = false,
