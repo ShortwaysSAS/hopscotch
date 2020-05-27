@@ -73,7 +73,7 @@
     }
 
     function getTargetScrollLocation(target, parent, align) {
-      var targetPosition = target.getBoundingClientRect(),
+      var targetPosition = target.boundingClientRect,
         parentPosition,
         x,
         y,
@@ -538,36 +538,25 @@
        * @private
        */
       getStepTargetHelper: function (target) {
-        var result = document.getElementById(target);
 
-        //Backwards compatibility: assume the string is an id
-        if (result) {
-          return result;
-        }
-        if (hasJquery()) {
-          var splittedChain = this.splitTargetChain(target);
-          result = jQuery(splittedChain[0]);
-          for (var i = 1; i < splittedChain.length; i++) {
-            result = result.contents().find(splittedChain[i]);
-          }
-          return result.length ? result[0] : null;
-        }
-        if (Sizzle) {
-          result = new Sizzle(target);
-          return result.length ? result[0] : null;
-        }
-        if (document.querySelector) {
-          try {
-            return document.querySelector(target);
-          } catch (err) {}
-        }
-        // Regex test for id. Following the HTML 4 spec for valid id formats.
-        // (http://www.w3.org/TR/html4/types.html#type-id)
-        if (/^#[a-zA-Z][\w-_:.]*$/.test(target)) {
-          return document.getElementById(target.substring(1));
+        var resolved = false;
+        var result = null;
+        var beginDate = new Date().getTime();
+
+        ShortwaysAssistant.targetService.getTarget(target).then(function(r) {
+          result = r;
+          resolved = true;
+        })
+
+        console.log("Will wait, soon.")
+
+        while(!resolved || new Date().getTime() < beginDate + 1000) {
+          console.log("waiting.....");
+          // WAIT....
         }
 
-        return null;
+        return result;
+
       },
 
       /**
@@ -737,31 +726,31 @@
        * @private
        */
       actualOffset: function ($element) {
-        var elOffset = $element.offset();
-        if ($element.is('iframe')) {
-          var elementCss = window.getComputedStyle($element[0]);
-          var elementContents = $element.contents();
-          elOffset.top += (parseInt(elementCss.borderTopWidth, 10) || 0) + (parseInt(elementCss.paddingTop, 10) || 0) - elementContents.scrollTop();
-          elOffset.left += (parseInt(elementCss.borderLeftWidth, 10) || 0) + (parseInt(elementCss.paddingLeft, 10) || 0) - elementContents.scrollLeft();
-        }
-        return elOffset;
+        // var elOffset = $element.offset();
+        // if ($element.is('iframe')) {
+        //   var elementCss = window.getComputedStyle($element[0]);
+        //   var elementContents = $element.contents();
+        //   elOffset.top += (parseInt(elementCss.borderTopWidth, 10) || 0) + (parseInt(elementCss.paddingTop, 10) || 0) - elementContents.scrollTop();
+        //   elOffset.left += (parseInt(elementCss.borderLeftWidth, 10) || 0) + (parseInt(elementCss.paddingLeft, 10) || 0) - elementContents.scrollLeft();
+        // }
+        // return elOffset;
       },
 
       /**
        * @private
        */
-      calcIframeElmtAbsoluteOffset: function (targets) {
-        var splittedChain = this.splitTargetChain(targets);
-        var $element = jQuery(splittedChain[0]);
-        var offset = this.actualOffset($element);
-        for (var i = 1; i < splittedChain.length - 1; i++) {
-          $element = $element.contents().find(splittedChain[i]);
-          var partialOffset = this.actualOffset($element);
-          offset.top += partialOffset.top;
-          offset.left += partialOffset.left;
-        }
-        return offset;
-      },
+      // calcIframeElmtAbsoluteOffset: function (targets) {
+      //   var splittedChain = this.splitTargetChain(targets);
+      //   var $element = jQuery(splittedChain[0]);
+      //   var offset = this.actualOffset($element);
+      //   for (var i = 1; i < splittedChain.length - 1; i++) {
+      //     $element = $element.contents().find(splittedChain[i]);
+      //     var partialOffset = this.actualOffset($element);
+      //     offset.top += partialOffset.top;
+      //     offset.left += partialOffset.left;
+      //   }
+      //   return offset;
+      // },
 
       /**
        * @private
@@ -967,7 +956,7 @@
           bubbleBoundingHeight = el.offsetHeight;
 
           // SET POSITION
-          boundingRect = targetEl.getBoundingClientRect();
+          boundingRect = targetEl.boundingClientRect;
         }
 
         function verticalLeftPosition() {
@@ -1039,13 +1028,20 @@
         }
 
         // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
-        var offset = utils.isTargetElmtOnRoot(targetEl) ? {
+        // var offset = utils.isTargetElmtOnRoot(targetEl) ? {
+        //     top: 0,
+        //     bottom: 0,
+        //     left: 0,
+        //     right: 0
+        //   } :
+        //   utils.calcIframeElmtAbsoluteOffset(step.target);
+
+        var offset = {
             top: 0,
             bottom: 0,
             left: 0,
             right: 0
-          } :
-          utils.calcIframeElmtAbsoluteOffset(step.target);
+          } 
 
         // HORIZONTAL OFFSET
         if (step.xOffset === 'center') {
