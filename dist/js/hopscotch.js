@@ -48,7 +48,7 @@
       winHopscotch,
       undefinedStr = 'undefined',
       waitingToStart = false, // is a tour waiting for the document to finish
-      // loading so that it can start?
+      // loading so that it can start ?
       hasSessionStorage = false,
       isStorageWritable = false,
       document = window.document,
