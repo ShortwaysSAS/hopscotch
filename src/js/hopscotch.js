@@ -551,7 +551,8 @@
         console.log("Will wait, soon.")
 
         while(!resolved || new Date().getTime() < beginDate + 1000) {
-          console.log("waiting.....");
+          console.log("waiting..... Current date : " + new Date().getTime());
+          console.log("begin date : " + beginDate)
           // WAIT....
         }
 
