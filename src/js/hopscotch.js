@@ -538,25 +538,7 @@
        * @private
        */
       getStepTargetHelper: function (target) {
-
-        var resolved = false;
-        var result = null;
-        var beginDate = new Date().getTime();
-
-        ShortwaysAssistant.targetService.getTarget(target).then(function(r) {
-          result = r;
-          resolved = true;
-        })
-
-        console.log("Will wait, soon.")
-
-        while(!resolved || new Date().getTime() < beginDate + 1000) {
-          console.log("waiting.....");
-          // WAIT....
-        }
-
-        return result;
-
+        return ShortwaysAssistant.targetService.getTarget(target)
       },
 
       /**
@@ -570,35 +552,11 @@
        * @private
        */
       getStepTarget: function (step) {
-        var queriedTarget;
-
         if (!step || !step.target) {
-          return null;
+          return Promise.resolve(null);
         }
 
-        if (typeof step.target === 'string') {
-          //Just one target to test. Check and return its results.
-          return utils.getStepTargetHelper(step.target);
-        } else if (Array.isArray(step.target)) {
-          // Multiple items to check. Check each and return the first success.
-          // Assuming they are all strings.
-          var i,
-            len;
-
-          for (i = 0, len = step.target.length; i < len; i++) {
-            if (typeof step.target[i] === 'string') {
-              queriedTarget = utils.getStepTargetHelper(step.target[i]);
-
-              if (queriedTarget) {
-                return queriedTarget;
-              }
-            }
-          }
-          return null;
-        }
-
-        // Assume that the step.target is a DOM element
-        return step.target;
+        return utils.getStepTargetHelper(step.target);
       },
 
       /**
@@ -919,158 +877,159 @@
           top,
           left,
           arrowOffset,
-          targetEl = utils.getStepTarget(step),
           el = this.element,
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
-        if (!targetEl || !jQuery(targetEl).is(':visible')) {
-          if (this.isShowing) {
-            this.hide();
-          }
-          return;
-        } else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
-          this.show();
-        }
-
-        utils.flipPlacement(step);
-        utils.normalizePlacement(step);
-
-        utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
-
-        // SET POSITION
-        if (targetEl.tagName === "AREA") {
-          bubbleBoundingWidth = bubbleBoundingHeight = 0;
-          boundingRect = {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            height: 0,
-            width: 0,
-            x: 0,
-            y: 0
-          };
-        } else {
-          bubbleBoundingWidth = el.offsetWidth;
-          bubbleBoundingHeight = el.offsetHeight;
-
-          // SET POSITION
-          boundingRect = targetEl.boundingClientRect;
-        }
-
-        function verticalLeftPosition() {
-          return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
-        }
-
-        function horizontalTopPosition() {
-          var targetElStyle = window.getComputedStyle(targetEl);
-          return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
-        }
-
-        switch (step.placement) {
-          case 'top':
-            top = (boundingRect.top - bubbleBoundingHeight) - this.opt.arrowWidth;
-            left = verticalLeftPosition();
-            break;
-          case 'bottom':
-            top = boundingRect.bottom + this.opt.arrowWidth;
-            left = verticalLeftPosition();
-            break;
-          case 'left':
-            top = horizontalTopPosition();
-            left = boundingRect.left - bubbleBoundingWidth - this.opt.arrowWidth;
-            break;
-          case 'right':
-            top = horizontalTopPosition();
-            left = boundingRect.right + this.opt.arrowWidth;
-            break;
-          default:
-            throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
-        }
-
-        // SET (OR RESET) ARROW OFFSETS
-        if (step.arrowOffset !== 'center') {
-          arrowOffset = utils.getPixelValue(step.arrowOffset);
-        } else {
-          arrowOffset = step.arrowOffset;
-        }
-        if (step.placement === 'top' || step.placement === 'bottom') {
-          if (step.placement === 'top') {
-            arrowEl.style.top = '';
-            arrowEl.style.bottom = '-39px';
-          } else {
-            arrowEl.style.top = '-22px';
-            arrowEl.style.bottom = '';
-          }
-          if (!arrowOffset) {
-            arrowEl.style.left = '10px';
-          } else if (arrowOffset === 'center') {
-            arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
-          } else if (arrowOffset) {
-            arrowEl.style[arrowPos] = arrowOffset + 'px';
-          }
-        } else if (step.placement === 'left' || step.placement === 'right') {
-          if (step.placement === 'left') {
-            arrowEl.style.left = '';
-            arrowEl.style.right = '-39px';
-          } else {
-            arrowEl.style.left = '-22px';
-            arrowEl.style.right = '';
-          }
-          if (!arrowOffset) {
-            arrowEl.style.top = '10px';
-          } else if (arrowOffset === 'center') {
-            arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
-          } else if (arrowOffset) {
-            arrowEl.style.top = arrowOffset + 'px';
-          }
-        }
-
-        // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
-        // var offset = utils.isTargetElmtOnRoot(targetEl) ? {
-        //     top: 0,
-        //     bottom: 0,
-        //     left: 0,
-        //     right: 0
-        //   } :
-        //   utils.calcIframeElmtAbsoluteOffset(step.target);
-
-        var offset = {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-          } 
-
-        // HORIZONTAL OFFSET
-        if (step.xOffset === 'center') {
-          left = (boundingRect.left + targetEl.offsetWidth / 2) - (bubbleBoundingWidth / 2);
-        } else {
-          left += utils.getPixelValue(step.xOffset) + offset.left;
-        }
-        // VERTICAL OFFSET
-        if (step.yOffset === 'center') {
-          top = (boundingRect.top + targetEl.offsetHeight / 2) - (bubbleBoundingHeight / 2);
-        } else {
-          top += utils.getPixelValue(step.yOffset) + offset.top;
-        }
-
-        // ADJUST TOP FOR SCROLL POSITION
-        if (!step.fixedElement && utils.isTargetElmtOnRoot(targetEl)) {
-          top += utils.getScrollTop();
-          left += utils.getScrollLeft();
-        } else {
-          if (!step.fixedElement) {
-            top += utils.getIframeScrollTop(step.target);
-          }
-        }
-
-        // ACCOUNT FOR FIXED POSITION ELEMENTS
-        el.style.position = (step.fixedElement ? 'fixed' : 'absolute');
-
-        el.style.top = top + 'px';
-        el.style.left = left + 'px';
+          utils.getStepTarget(step).then(function(targetEl) {
+            if (!targetEl || !targetEl.isVisible) {
+              if (this.isShowing) {
+                this.hide();
+              }
+              return;
+            } else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
+              this.show();
+            }
+    
+            utils.flipPlacement(step);
+            utils.normalizePlacement(step);
+    
+            utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
+    
+            // SET POSITION
+            if (targetEl.tagName === "AREA") {
+              bubbleBoundingWidth = bubbleBoundingHeight = 0;
+              boundingRect = {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                height: 0,
+                width: 0,
+                x: 0,
+                y: 0
+              };
+            } else {
+              bubbleBoundingWidth = el.offsetWidth;
+              bubbleBoundingHeight = el.offsetHeight;
+    
+              // SET POSITION
+              boundingRect = targetEl.boundingClientRect;
+            }
+    
+            function verticalLeftPosition() {
+              return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
+            }
+    
+            function horizontalTopPosition() {
+              var targetElStyle = window.getComputedStyle(targetEl);
+              return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
+            }
+    
+            switch (step.placement) {
+              case 'top':
+                top = (boundingRect.top - bubbleBoundingHeight) - this.opt.arrowWidth;
+                left = verticalLeftPosition();
+                break;
+              case 'bottom':
+                top = boundingRect.bottom + this.opt.arrowWidth;
+                left = verticalLeftPosition();
+                break;
+              case 'left':
+                top = horizontalTopPosition();
+                left = boundingRect.left - bubbleBoundingWidth - this.opt.arrowWidth;
+                break;
+              case 'right':
+                top = horizontalTopPosition();
+                left = boundingRect.right + this.opt.arrowWidth;
+                break;
+              default:
+                throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
+            }
+    
+            // SET (OR RESET) ARROW OFFSETS
+            if (step.arrowOffset !== 'center') {
+              arrowOffset = utils.getPixelValue(step.arrowOffset);
+            } else {
+              arrowOffset = step.arrowOffset;
+            }
+            if (step.placement === 'top' || step.placement === 'bottom') {
+              if (step.placement === 'top') {
+                arrowEl.style.top = '';
+                arrowEl.style.bottom = '-39px';
+              } else {
+                arrowEl.style.top = '-22px';
+                arrowEl.style.bottom = '';
+              }
+              if (!arrowOffset) {
+                arrowEl.style.left = '10px';
+              } else if (arrowOffset === 'center') {
+                arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
+              } else if (arrowOffset) {
+                arrowEl.style[arrowPos] = arrowOffset + 'px';
+              }
+            } else if (step.placement === 'left' || step.placement === 'right') {
+              if (step.placement === 'left') {
+                arrowEl.style.left = '';
+                arrowEl.style.right = '-39px';
+              } else {
+                arrowEl.style.left = '-22px';
+                arrowEl.style.right = '';
+              }
+              if (!arrowOffset) {
+                arrowEl.style.top = '10px';
+              } else if (arrowOffset === 'center') {
+                arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
+              } else if (arrowOffset) {
+                arrowEl.style.top = arrowOffset + 'px';
+              }
+            }
+    
+            // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
+            // var offset = utils.isTargetElmtOnRoot(targetEl) ? {
+            //     top: 0,
+            //     bottom: 0,
+            //     left: 0,
+            //     right: 0
+            //   } :
+            //   utils.calcIframeElmtAbsoluteOffset(step.target);
+    
+            var offset = {
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0
+              } 
+    
+            // HORIZONTAL OFFSET
+            if (step.xOffset === 'center') {
+              left = (boundingRect.left + targetEl.offsetWidth / 2) - (bubbleBoundingWidth / 2);
+            } else {
+              left += utils.getPixelValue(step.xOffset) + offset.left;
+            }
+            // VERTICAL OFFSET
+            if (step.yOffset === 'center') {
+              top = (boundingRect.top + targetEl.offsetHeight / 2) - (bubbleBoundingHeight / 2);
+            } else {
+              top += utils.getPixelValue(step.yOffset) + offset.top;
+            }
+    
+            // ADJUST TOP FOR SCROLL POSITION
+            if (!step.fixedElement && utils.isTargetElmtOnRoot(targetEl)) {
+              top += utils.getScrollTop();
+              left += utils.getScrollLeft();
+            } else {
+              if (!step.fixedElement) {
+                top += utils.getIframeScrollTop(step.target);
+              }
+            }
+    
+            // ACCOUNT FOR FIXED POSITION ELEMENTS
+            el.style.position = (step.fixedElement ? 'fixed' : 'absolute');
+    
+            el.style.top = top + 'px';
+            el.style.left = left + 'px';
+          });
       },
 
       /**
@@ -1566,9 +1525,9 @@
           if (callouts[opt.id]) {
             throw new Error('Callout by that id already exists. Please choose a unique id.');
           }
-          if (!utils.getStepTarget(opt)) {
-            throw new Error('Must specify existing target element via \'target\' option.');
-          }
+          // if (!utils.getStepTarget(opt)) {
+          //   throw new Error('Must specify existing target element via \'target\' option.');
+          // }
           opt.showNextButton = opt.showPrevButton = false;
           opt.isTourBubble = false;
           callout = new HopscotchBubble(opt);
@@ -1650,13 +1609,15 @@
             callout = callouts[calloutId];
             opts = calloutOpts[calloutId];
             if (callout && opts) {
-              var target = utils.getStepTarget(opts);
-              if (target && utils.isVisible(target)) {
-                callout.show();
-                callout.setPosition(opts);
-              } else {
-                callout.hide();
-              }
+
+              utils.getStepTarget(opts).then(function(target) {
+                if (target && utils.isVisible(target)) {
+                  callout.show();
+                  callout.setPosition(opts);
+                } else {
+                  callout.hide();
+                }
+              })
             }
           }
         }
@@ -1774,31 +1735,34 @@
           }
 
           const step = getCurrStep();
-          const targetEl = utils.getStepTarget(step);
 
-          //S#6402 new device option scrollImmediate || compatibility mode for IE
-          if (getOption('scrollImmediate') || (!!document.documentMode && getOption('compatMode'))) {
-            //align target top by default or bottom if step bubble displayed on top
-            const isBubbleTop = step.placement === "top";
-            targetEl.scrollIntoView(!isBubbleTop);
-            cb();
+          utils.getStepTarget(step).then(function(targetEl) {
+            //S#6402 new device option scrollImmediate || compatibility mode for IE
+            if (getOption('scrollImmediate') || (!!document.documentMode && getOption('compatMode'))) {
+              //align target top by default or bottom if step bubble displayed on top
+              const isBubbleTop = step.placement === "top";
+              targetEl.scrollIntoView(!isBubbleTop);
+              cb();
 
-            //S#7079 Do not perform adjustScroll
-            if (getOption('doNotAdjustScroll')) {
-              return;
+              //S#7079 Do not perform adjustScroll
+              if (getOption('doNotAdjustScroll')) {
+                return;
+              }
+
+              // const targetElPosition = jQuery(targetEl).position();
+              const targetElPosition = targetEl.boundingClientRect;
+              const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
+              const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
+              const adjustScroll = !isElementOnTopScreen && !isElementOnBottomScreen || isBubbleTop && isElementOnBottomScreen || !isBubbleTop && isElementOnTopScreen;
+              if (adjustScroll) {
+                window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
+              }
+              
+            } else {
+              // TODO S#7119
+              // utils.scrollIntoView(targetEl, cb);
             }
-
-            const targetElPosition = jQuery(targetEl).position();
-            const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
-            const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
-            const adjustScroll = !isElementOnTopScreen && !isElementOnBottomScreen || isBubbleTop && isElementOnBottomScreen || !isBubbleTop && isElementOnTopScreen;
-            if (adjustScroll) {
-              window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
-            }
-            
-          } else {
-            utils.scrollIntoView(targetEl, cb);
-          }
+          })
         },
 
         /**
@@ -1823,24 +1787,24 @@
             step = getCurrStep();
 
             goToStepFn = function () {
-              target = utils.getStepTarget(step);
-
-              if (target) {
-                //this step was previously skipped, but now its target exists,
-                //remove this step from skipped steps set
-                if (skippedSteps[currStepNum]) {
-                  delete skippedSteps[currStepNum];
+              utils.getStepTarget(step).then(function(target) {
+                if (target) {
+                  //this step was previously skipped, but now its target exists,
+                  //remove this step from skipped steps set
+                  if (skippedSteps[currStepNum]) {
+                    delete skippedSteps[currStepNum];
+                  }
+                  // We're done! Return the step number via the callback.
+                  cb(currStepNum);
+                } else {
+                  //mark this step as skipped, since its target wasn't found
+                  skippedSteps[currStepNum] = true;
+                  // Haven't found a valid target yet. Recursively call
+                  // goToStepWithTarget.
+                  utils.invokeEventCallbacks('error');
+                  goToStepWithTarget(direction, cb);
                 }
-                // We're done! Return the step number via the callback.
-                cb(currStepNum);
-              } else {
-                //mark this step as skipped, since its target wasn't found
-                skippedSteps[currStepNum] = true;
-                // Haven't found a valid target yet. Recursively call
-                // goToStepWithTarget.
-                utils.invokeEventCallbacks('error');
-                goToStepWithTarget(direction, cb);
-              }
+              });
             };
 
             if (step.delay) {
@@ -1940,15 +1904,19 @@
             const previousStepNum = currStepNum;
             currStepNum += direction;
             step = getCurrStep();
-            if (!utils.getStepTarget(step) && !wasMultiPage) {
-              utils.invokeEventCallbacks('error');
-              if (origStep.showNextButton) {
-                return this.endTour(true, false, true);
-              } else {
-                return this.endTour(true, false);
+
+            utils.getStepTarget(step).then(function(targetEl) {
+              if (!targetEl.isFound && !wasMultiPage) {
+                utils.invokeEventCallbacks('error');
+                if (origStep.showNextButton) {
+                  return this.endTour(true, false, true);
+                } else {
+                  return this.endTour(true, false);
+                }
               }
-            }
-            changeStepCb.call(this, currStepNum, origStep);
+              changeStepCb.call(this, currStepNum, origStep);
+            })
+
           } else if (currStepNum + direction === currTour.steps.length) {
             return this.endTour();
           }
@@ -2011,39 +1979,39 @@
           currStepNum = startStepNum || 0;
           skippedSteps = savedSkippedSteps || {};
           step = getCurrStep();
-          target = utils.getStepTarget(step);
 
-          if (target) {
-            // First step had an existing target.
-            cb(currStepNum);
-            return;
-          }
-
-          if (!target) {
-            // Previous target doesn't exist either. The user may have just
-            // clicked on a link that wasn't part of the tour. Another possibility is that
-            // the user clicked on the correct link, but the target is just missing for
-            // whatever reason. In either case, we should just advance until we find a step
-            // that has a target on the page or end the tour if we can't find such a step.
-            utils.invokeEventCallbacks('error');
-
-            //this step was skipped, since its target does not exist
-            skippedSteps[currStepNum] = true;
-
-            if (getOption('skipIfNoElement')) {
-              goToStepWithTarget(1, cb);
-              return;
-            } else {
-              currStepNum = -1;
+          utils.getStepTarget(step).then(function(target) {
+            if (target) {
+              // First step had an existing target.
               cb(currStepNum);
+              return;
             }
-          }
+  
+            if (!target) {
+              // Previous target doesn't exist either. The user may have just
+              // clicked on a link that wasn't part of the tour. Another possibility is that
+              // the user clicked on the correct link, but the target is just missing for
+              // whatever reason. In either case, we should just advance until we find a step
+              // that has a target on the page or end the tour if we can't find such a step.
+              utils.invokeEventCallbacks('error');
+  
+              //this step was skipped, since its target does not exist
+              skippedSteps[currStepNum] = true;
+  
+              if (getOption('skipIfNoElement')) {
+                goToStepWithTarget(1, cb);
+                return;
+              } else {
+                currStepNum = -1;
+                cb(currStepNum);
+              }
+            }
+          })
         },
 
         showStepHelper = function (stepNum) {
           var step = currTour.steps[stepNum],
-            bubble = getBubble(),
-            targetEl = utils.getStepTarget(step);
+            bubble = getBubble();
 
           function showBubble() {
             bubble.show();
@@ -2171,9 +2139,8 @@
 
         // Find the current step we should begin the tour on, and then actually start the tour.
         findStartingStep(currStepNum, skippedSteps, function (stepNum) {
-          var target = (stepNum !== -1) && utils.getStepTarget(currTour.steps[stepNum]);
 
-          if (!target) {
+          if (stepNum !== -1) {
             // Should we trigger onEnd callback? Let's err on the side of caution
             // and not trigger it. Don't want weird stuff happening on a page that
             // wasn't meant for the tour. Up to the developer to fix their tour.
@@ -2181,24 +2148,36 @@
             return;
           }
 
-          utils.invokeEventCallbacks('start');
-
-          bubble = getBubble();
-          // TODO: do we still need this call to .hide()? No longer using opt.animate...
-          // Leaving it in for now to play it safe
-          bubble.hide(false); // make invisible for boundingRect calculations when opt.animate == true
-
-          self.isActive = true;
-
-          if (!utils.getStepTarget(getCurrStep())) {
-            // First step element doesn't exist
-            utils.invokeEventCallbacks('error');
-            if (getOption('skipIfNoElement')) {
-              self.nextStep(false);
+          utils.getStepTarget(currTour.steps[stepNum]).then(function(target) {
+            if (!target.isFound) {
+              // Should we trigger onEnd callback? Let's err on the side of caution
+              // and not trigger it. Don't want weird stuff happening on a page that
+              // wasn't meant for the tour. Up to the developer to fix their tour.
+              self.endTour(false, false);
+              return;
             }
-          } else {
-            self.showStep(stepNum);
-          }
+  
+            utils.invokeEventCallbacks('start');
+  
+            bubble = getBubble();
+            // TODO: do we still need this call to .hide()? No longer using opt.animate...
+            // Leaving it in for now to play it safe
+            bubble.hide(false); // make invisible for boundingRect calculations when opt.animate == true
+  
+            self.isActive = true;
+  
+            utils.getStepTarget(getCurrStep()).then(function(currentTarget) {
+              if (!currentTarget.isFound) {
+                // First step element doesn't exist
+                utils.invokeEventCallbacks('error');
+                if (getOption('skipIfNoElement')) {
+                  self.nextStep(false);
+                }
+              } else {
+                self.showStep(stepNum);
+              }
+            })
+          });
         });
 
         return this;
@@ -2215,20 +2194,22 @@
       this.showStep = function (stepNum) {
         var step = currTour.steps[stepNum],
           prevStepNum = currStepNum;
-        if (!utils.getStepTarget(step)) {
-          currStepNum = stepNum;
-          utils.invokeEventCallbacks('error');
-          currStepNum = prevStepNum;
-          return;
-        }
 
-        if (step.delay) {
-          setTimeout(function () {
-            showStepHelper(stepNum);
-          }, step.delay);
-        } else {
-          showStepHelper(stepNum);
-        }
+          utils.getStepTarget(step).then(function(target) {
+            if (!target.isFound) {
+              currStepNum = stepNum;
+              utils.invokeEventCallbacks('error');
+              currStepNum = prevStepNum;
+              return;
+            }
+            if (step.delay) {
+              setTimeout(function () {
+                showStepHelper(stepNum);
+              }, step.delay);
+            } else {
+              showStepHelper(stepNum);
+            }
+          });
         return this;
       };
 
