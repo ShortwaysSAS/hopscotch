@@ -881,14 +881,16 @@
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
+          var that = this;
+
           utils.getStepTarget(step).then(function(targetEl) {
             if (!targetEl || !targetEl.isVisible) {
-              if (this.isShowing) {
-                this.hide();
+              if (that.isShowing) {
+                that.hide();
               }
               return;
-            } else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
-              this.show();
+            } else if (!that.isShowing && that.hasAlreadyBeenDisplayed) {
+              that.show();
             }
     
             utils.flipPlacement(step);
@@ -928,20 +930,20 @@
     
             switch (step.placement) {
               case 'top':
-                top = (boundingRect.top - bubbleBoundingHeight) - this.opt.arrowWidth;
+                top = (boundingRect.top - bubbleBoundingHeight) - that.opt.arrowWidth;
                 left = verticalLeftPosition();
                 break;
               case 'bottom':
-                top = boundingRect.bottom + this.opt.arrowWidth;
+                top = boundingRect.bottom + that.opt.arrowWidth;
                 left = verticalLeftPosition();
                 break;
               case 'left':
                 top = horizontalTopPosition();
-                left = boundingRect.left - bubbleBoundingWidth - this.opt.arrowWidth;
+                left = boundingRect.left - bubbleBoundingWidth - that.opt.arrowWidth;
                 break;
               case 'right':
                 top = horizontalTopPosition();
-                left = boundingRect.right + this.opt.arrowWidth;
+                left = boundingRect.right + that.opt.arrowWidth;
                 break;
               default:
                 throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
