@@ -2142,7 +2142,7 @@
         // Find the current step we should begin the tour on, and then actually start the tour.
         findStartingStep(currStepNum, skippedSteps, function (stepNum) {
 
-          if (stepNum !== -1) {
+          if (stepNum === -1) {
             // Should we trigger onEnd callback? Let's err on the side of caution
             // and not trigger it. Don't want weird stuff happening on a page that
             // wasn't meant for the tour. Up to the developer to fix their tour.
