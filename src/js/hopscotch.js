@@ -206,7 +206,7 @@
           element.scrollHeight !== element.clientHeight ||
           element.scrollWidth !== element.clientWidth
         ) &&
-        getComputedStyle(element).overflow !== 'hidden'
+        true //getComputedStyle(element).overflow !== 'hidden'
       );
     }
 
@@ -723,7 +723,7 @@
        * @private
        */
       isTargetElmtOnRoot: function (targetElmt) {
-        return targetElmt.ownerDocument.defaultView.self === window.top;
+        return true;//targetElmt.ownerDocument.defaultView.self === window.top;
       },
 
       /**
@@ -784,11 +784,7 @@
        * Used to check if an element is visible in the DOM with or without jQuery
        */
       isVisible: function (target) {
-        if (hasJquery()) {
-          return jQuery(target).is(':visible');
-        } else {
-          return target.offsetParent !== null;
-        }
+        return target && target.isVisible;
       },
 
       /**
@@ -924,7 +920,7 @@
             }
     
             function horizontalTopPosition() {
-              var targetElStyle = window.getComputedStyle(targetEl);
+              var targetElStyle = 0;//window.getComputedStyle(targetEl);
               return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
             }
     
@@ -1762,6 +1758,7 @@
               
             } else {
               // TODO S#7119
+              cb();
               // utils.scrollIntoView(targetEl, cb);
             }
           })

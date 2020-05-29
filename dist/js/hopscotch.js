@@ -222,7 +222,7 @@
           element.scrollHeight !== element.clientHeight ||
           element.scrollWidth !== element.clientWidth
         ) &&
-        getComputedStyle(element).overflow !== 'hidden'
+        true //getComputedStyle(element).overflow !== 'hidden'
       );
     }
 
@@ -739,7 +739,7 @@
        * @private
        */
       isTargetElmtOnRoot: function (targetElmt) {
-        return targetElmt.ownerDocument.defaultView.self === window.top;
+        return true;//targetElmt.ownerDocument.defaultView.self === window.top;
       },
 
       /**
@@ -800,11 +800,7 @@
        * Used to check if an element is visible in the DOM with or without jQuery
        */
       isVisible: function (target) {
-        if (hasJquery()) {
-          return jQuery(target).is(':visible');
-        } else {
-          return target.offsetParent !== null;
-        }
+        return target && target.isVisible;
       },
 
       /**
@@ -897,14 +893,16 @@
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
+          var that = this;
+
           utils.getStepTarget(step).then(function(targetEl) {
             if (!targetEl || !targetEl.isVisible) {
-              if (this.isShowing) {
-                this.hide();
+              if (that.isShowing) {
+                that.hide();
               }
               return;
-            } else if (!this.isShowing && this.hasAlreadyBeenDisplayed) {
-              this.show();
+            } else if (!that.isShowing && that.hasAlreadyBeenDisplayed) {
+              that.show();
             }
     
             utils.flipPlacement(step);
@@ -938,26 +936,26 @@
             }
     
             function horizontalTopPosition() {
-              var targetElStyle = window.getComputedStyle(targetEl);
+              var targetElStyle = 0;//window.getComputedStyle(targetEl);
               return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
             }
     
             switch (step.placement) {
               case 'top':
-                top = (boundingRect.top - bubbleBoundingHeight) - this.opt.arrowWidth;
+                top = (boundingRect.top - bubbleBoundingHeight) - that.opt.arrowWidth;
                 left = verticalLeftPosition();
                 break;
               case 'bottom':
-                top = boundingRect.bottom + this.opt.arrowWidth;
+                top = boundingRect.bottom + that.opt.arrowWidth;
                 left = verticalLeftPosition();
                 break;
               case 'left':
                 top = horizontalTopPosition();
-                left = boundingRect.left - bubbleBoundingWidth - this.opt.arrowWidth;
+                left = boundingRect.left - bubbleBoundingWidth - that.opt.arrowWidth;
                 break;
               case 'right':
                 top = horizontalTopPosition();
-                left = boundingRect.right + this.opt.arrowWidth;
+                left = boundingRect.right + that.opt.arrowWidth;
                 break;
               default:
                 throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
@@ -1776,6 +1774,7 @@
               
             } else {
               // TODO S#7119
+              cb();
               // utils.scrollIntoView(targetEl, cb);
             }
           })
@@ -2156,7 +2155,7 @@
         // Find the current step we should begin the tour on, and then actually start the tour.
         findStartingStep(currStepNum, skippedSteps, function (stepNum) {
 
-          if (stepNum !== -1) {
+          if (stepNum === -1) {
             // Should we trigger onEnd callback? Let's err on the side of caution
             // and not trigger it. Don't want weird stuff happening on a page that
             // wasn't meant for the tour. Up to the developer to fix their tour.
