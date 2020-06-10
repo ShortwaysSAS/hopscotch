@@ -45,10 +45,6 @@
     var COMPLETE = 'complete',
       CANCELED = 'canceled';
 
-    function hasJquery() {
-      return !!(window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery || window.jQuery || (window.$ && window.$.fn))
-    }
-
     function jQuery(element, target) {
       return window.ShortwaysAssistant.defaultSelector && window.ShortwaysAssistant.defaultSelector.toJQuery(element, target)
         || window.jQuery(element, target)
@@ -224,7 +220,7 @@
         sessionStorage.removeItem('hopscotch.test.storage');
         isStorageWritable = true;
       }
-    } catch (err) {}
+    } catch (err) { }
 
     defaultOpts = {
       smoothScroll: true,
@@ -683,36 +679,6 @@
       /**
        * @private
        */
-      actualOffset: function ($element) {
-        // var elOffset = $element.offset();
-        // if ($element.is('iframe')) {
-        //   var elementCss = window.getComputedStyle($element[0]);
-        //   var elementContents = $element.contents();
-        //   elOffset.top += (parseInt(elementCss.borderTopWidth, 10) || 0) + (parseInt(elementCss.paddingTop, 10) || 0) - elementContents.scrollTop();
-        //   elOffset.left += (parseInt(elementCss.borderLeftWidth, 10) || 0) + (parseInt(elementCss.paddingLeft, 10) || 0) - elementContents.scrollLeft();
-        // }
-        // return elOffset;
-      },
-
-      /**
-       * @private
-       */
-      // calcIframeElmtAbsoluteOffset: function (targets) {
-      //   var splittedChain = this.splitTargetChain(targets);
-      //   var $element = jQuery(splittedChain[0]);
-      //   var offset = this.actualOffset($element);
-      //   for (var i = 1; i < splittedChain.length - 1; i++) {
-      //     $element = $element.contents().find(splittedChain[i]);
-      //     var partialOffset = this.actualOffset($element);
-      //     offset.top += partialOffset.top;
-      //     offset.left += partialOffset.left;
-      //   }
-      //   return offset;
-      // },
-
-      /**
-       * @private
-       */
       splitTargetChain: function (targets) {
         return targets.split('//://').map(function (element) {
           return element.replace(':contains(', ':not([class^="hopscotch-bubble"]):contains(')
@@ -729,55 +695,12 @@
       /**
        * @private scrollIntoView polyfill
        */
-      scrollIntoView: function (target, settings, callback) {
-        if (!target) {
-          return;
-        }
-
-        if (typeof settings === 'function') {
-          callback = settings;
-          settings = null;
-        }
-
-        if (!settings) {
-          settings = {};
-        }
-
-        settings.time = isNaN(settings.time) ? 1000 : settings.time;
-        settings.ease = settings.ease || function (v) {
-          return 1 - Math.pow(1 - v, v / 2);
-        };
-
-        var parent = target.parentElement,
-          parents = 0;
-
-        function done(endType) {
-          parents--;
-          if (!parents) {
-            callback && callback(endType);
+      scrollIntoView: function (target, callback) {
+        ShortwaysAssistant.targetService.ensureVisible(target).then(
+          function () {
+            callback && callback();
           }
-        }
-
-        var validTarget = settings.validTarget || defaultValidTarget;
-        var isScrollable = settings.isScrollable;
-
-        while (parent) {
-          if (validTarget(parent, parents) && (isScrollable ? isScrollable(parent, defaultIsScrollable) : defaultIsScrollable(parent))) {
-            parents++;
-            transitionScrollTo(target, parent, settings, done);
-          }
-
-          parent = parent.parentElement;
-
-          if (!parent) {
-            return;
-          }
-
-          if (parent.tagName === 'BODY' || parent.tagName === 'HTML') {
-            parent = parent.ownerDocument;
-            parent = parent.defaultView || parent.ownerWindow;
-          }
-        }
+        );
       },
 
       /**
@@ -877,157 +800,148 @@
           arrowEl = this.arrowEl,
           arrowPos = step.isRtl ? 'right' : 'left';
 
-          var that = this;
+        var that = this;
 
-          utils.getStepTarget(step).then(function(targetEl) {
-            if (!targetEl || !targetEl.isVisible) {
-              if (that.isShowing) {
-                that.hide();
-              }
-              return;
-            } else if (!that.isShowing && that.hasAlreadyBeenDisplayed) {
-              that.show();
+        utils.getStepTarget(step).then(function (targetEl) {
+          if (!targetEl || !targetEl.isVisible) {
+            if (that.isShowing) {
+              that.hide();
             }
-    
-            utils.flipPlacement(step);
-            utils.normalizePlacement(step);
-    
-            utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
-    
+            return;
+          } else if (!that.isShowing && that.hasAlreadyBeenDisplayed) {
+            that.show();
+          }
+
+          utils.flipPlacement(step);
+          utils.normalizePlacement(step);
+
+          utils.removeClass(el, 'fade-in-down fade-in-up fade-in-left fade-in-right');
+
+          // SET POSITION
+          if (targetEl.tagName === "AREA") {
+            bubbleBoundingWidth = bubbleBoundingHeight = 0;
+            boundingRect = {
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              height: 0,
+              width: 0,
+              x: 0,
+              y: 0
+            };
+          } else {
+            bubbleBoundingWidth = el.offsetWidth;
+            bubbleBoundingHeight = el.offsetHeight;
+
             // SET POSITION
-            if (targetEl.tagName === "AREA") {
-              bubbleBoundingWidth = bubbleBoundingHeight = 0;
-              boundingRect = {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-                height: 0,
-                width: 0,
-                x: 0,
-                y: 0
-              };
+            boundingRect = targetEl.boundingClientRect;
+          }
+
+          function verticalLeftPosition() {
+            return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
+          }
+
+          function horizontalTopPosition() {
+            var targetElStyle = 0;//window.getComputedStyle(targetEl);
+            return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
+          }
+
+          switch (step.placement) {
+            case 'top':
+              top = (boundingRect.top - bubbleBoundingHeight) - that.opt.arrowWidth;
+              left = verticalLeftPosition();
+              break;
+            case 'bottom':
+              top = boundingRect.bottom + that.opt.arrowWidth;
+              left = verticalLeftPosition();
+              break;
+            case 'left':
+              top = horizontalTopPosition();
+              left = boundingRect.left - bubbleBoundingWidth - that.opt.arrowWidth;
+              break;
+            case 'right':
+              top = horizontalTopPosition();
+              left = boundingRect.right + that.opt.arrowWidth;
+              break;
+            default:
+              throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
+          }
+
+          // SET (OR RESET) ARROW OFFSETS
+          if (step.arrowOffset !== 'center') {
+            arrowOffset = utils.getPixelValue(step.arrowOffset);
+          } else {
+            arrowOffset = step.arrowOffset;
+          }
+          if (step.placement === 'top' || step.placement === 'bottom') {
+            if (step.placement === 'top') {
+              arrowEl.style.top = '';
+              arrowEl.style.bottom = '-39px';
             } else {
-              bubbleBoundingWidth = el.offsetWidth;
-              bubbleBoundingHeight = el.offsetHeight;
-    
-              // SET POSITION
-              boundingRect = targetEl.boundingClientRect;
+              arrowEl.style.top = '-22px';
+              arrowEl.style.bottom = '';
             }
-    
-            function verticalLeftPosition() {
-              return step.isRtl ? boundingRect.right - bubbleBoundingWidth : boundingRect.left;
+            if (!arrowOffset) {
+              arrowEl.style.left = '10px';
+            } else if (arrowOffset === 'center') {
+              arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
+            } else if (arrowOffset) {
+              arrowEl.style[arrowPos] = arrowOffset + 'px';
             }
-    
-            function horizontalTopPosition() {
-              var targetElStyle = 0;//window.getComputedStyle(targetEl);
-              return boundingRect.top + parseFloat(targetElStyle.paddingTop) + parseFloat(targetElStyle.borderTopWidth) - 22;
-            }
-    
-            switch (step.placement) {
-              case 'top':
-                top = (boundingRect.top - bubbleBoundingHeight) - that.opt.arrowWidth;
-                left = verticalLeftPosition();
-                break;
-              case 'bottom':
-                top = boundingRect.bottom + that.opt.arrowWidth;
-                left = verticalLeftPosition();
-                break;
-              case 'left':
-                top = horizontalTopPosition();
-                left = boundingRect.left - bubbleBoundingWidth - that.opt.arrowWidth;
-                break;
-              case 'right':
-                top = horizontalTopPosition();
-                left = boundingRect.right + that.opt.arrowWidth;
-                break;
-              default:
-                throw new Error('Bubble placement failed because step.placement is invalid or undefined!');
-            }
-    
-            // SET (OR RESET) ARROW OFFSETS
-            if (step.arrowOffset !== 'center') {
-              arrowOffset = utils.getPixelValue(step.arrowOffset);
+          } else if (step.placement === 'left' || step.placement === 'right') {
+            if (step.placement === 'left') {
+              arrowEl.style.left = '';
+              arrowEl.style.right = '-39px';
             } else {
-              arrowOffset = step.arrowOffset;
+              arrowEl.style.left = '-22px';
+              arrowEl.style.right = '';
             }
-            if (step.placement === 'top' || step.placement === 'bottom') {
-              if (step.placement === 'top') {
-                arrowEl.style.top = '';
-                arrowEl.style.bottom = '-39px';
-              } else {
-                arrowEl.style.top = '-22px';
-                arrowEl.style.bottom = '';
-              }
-              if (!arrowOffset) {
-                arrowEl.style.left = '10px';
-              } else if (arrowOffset === 'center') {
-                arrowEl.style[arrowPos] = Math.floor((bubbleBoundingWidth / 2) - arrowEl.offsetWidth / 2) + 'px';
-              } else if (arrowOffset) {
-                arrowEl.style[arrowPos] = arrowOffset + 'px';
-              }
-            } else if (step.placement === 'left' || step.placement === 'right') {
-              if (step.placement === 'left') {
-                arrowEl.style.left = '';
-                arrowEl.style.right = '-39px';
-              } else {
-                arrowEl.style.left = '-22px';
-                arrowEl.style.right = '';
-              }
-              if (!arrowOffset) {
-                arrowEl.style.top = '10px';
-              } else if (arrowOffset === 'center') {
-                arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
-              } else if (arrowOffset) {
-                arrowEl.style.top = arrowOffset + 'px';
-              }
+            if (!arrowOffset) {
+              arrowEl.style.top = '10px';
+            } else if (arrowOffset === 'center') {
+              arrowEl.style.top = Math.floor((bubbleBoundingHeight / 2) - arrowEl.offsetHeight / 2) + 'px';
+            } else if (arrowOffset) {
+              arrowEl.style.top = arrowOffset + 'px';
             }
-    
-            // ABSOLUTE POSITION OF ELEMENT INSIDE IFRAME
-            // var offset = utils.isTargetElmtOnRoot(targetEl) ? {
-            //     top: 0,
-            //     bottom: 0,
-            //     left: 0,
-            //     right: 0
-            //   } :
-            //   utils.calcIframeElmtAbsoluteOffset(step.target);
-    
-            var offset = {
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0
-              } 
-    
-            // HORIZONTAL OFFSET
-            if (step.xOffset === 'center') {
-              left = (boundingRect.left + targetEl.offsetWidth / 2) - (bubbleBoundingWidth / 2);
-            } else {
-              left += utils.getPixelValue(step.xOffset) + offset.left;
+          }
+
+          var offset = {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+          }
+
+          // HORIZONTAL OFFSET
+          if (step.xOffset === 'center') {
+            left = (boundingRect.left + targetEl.offsetWidth / 2) - (bubbleBoundingWidth / 2);
+          } else {
+            left += utils.getPixelValue(step.xOffset) + offset.left;
+          }
+          // VERTICAL OFFSET
+          if (step.yOffset === 'center') {
+            top = (boundingRect.top + targetEl.offsetHeight / 2) - (bubbleBoundingHeight / 2);
+          } else {
+            top += utils.getPixelValue(step.yOffset) + offset.top;
+          }
+
+          // ADJUST TOP FOR SCROLL POSITION
+          if (!step.fixedElement && utils.isTargetElmtOnRoot(targetEl)) {
+            top += utils.getScrollTop();
+            left += utils.getScrollLeft();
+          } else {
+            if (!step.fixedElement) {
+              top += utils.getIframeScrollTop(step.target);
             }
-            // VERTICAL OFFSET
-            if (step.yOffset === 'center') {
-              top = (boundingRect.top + targetEl.offsetHeight / 2) - (bubbleBoundingHeight / 2);
-            } else {
-              top += utils.getPixelValue(step.yOffset) + offset.top;
-            }
-    
-            // ADJUST TOP FOR SCROLL POSITION
-            if (!step.fixedElement && utils.isTargetElmtOnRoot(targetEl)) {
-              top += utils.getScrollTop();
-              left += utils.getScrollLeft();
-            } else {
-              if (!step.fixedElement) {
-                top += utils.getIframeScrollTop(step.target);
-              }
-            }
-    
-            // ACCOUNT FOR FIXED POSITION ELEMENTS
-            el.style.position = (step.fixedElement ? 'fixed' : 'absolute');
-    
-            el.style.top = top + 'px';
-            el.style.left = left + 'px';
-          });
+          }
+
+          // ACCOUNT FOR FIXED POSITION ELEMENTS
+          el.style.position = (step.fixedElement ? 'fixed' : 'absolute');
+
+          el.style.top = top + 'px';
+          el.style.left = left + 'px';
+        });
       },
 
       /**
@@ -1608,7 +1522,7 @@
             opts = calloutOpts[calloutId];
             if (callout && opts) {
 
-              utils.getStepTarget(opts).then(function(target) {
+              utils.getStepTarget(opts).then(function (target) {
                 if (target && utils.isVisible(target)) {
                   callout.show();
                   callout.setPosition(opts);
@@ -1719,49 +1633,12 @@
         /**
          * adjustWindowScroll
          *
-         * Checks if the bubble or target element is partially or completely
-         * outside of the viewport. If it is, adjust the window scroll position
-         * to bring it back into the viewport.
-         *
          * @private
          * @param {Function} cb Callback to invoke after done scrolling.
          */
         adjustWindowScroll = function (cb) {
-          // jQuery is required
-          if (!hasJquery()) {
-            return;
-          }
-
           const step = getCurrStep();
-
-          utils.getStepTarget(step).then(function(targetEl) {
-            //S#6402 new device option scrollImmediate || compatibility mode for IE
-            if (getOption('scrollImmediate') || (!!document.documentMode && getOption('compatMode'))) {
-              //align target top by default or bottom if step bubble displayed on top
-              const isBubbleTop = step.placement === "top";
-              targetEl.scrollIntoView(!isBubbleTop);
-              cb();
-
-              //S#7079 Do not perform adjustScroll
-              if (getOption('doNotAdjustScroll')) {
-                return;
-              }
-
-              // const targetElPosition = jQuery(targetEl).position();
-              const targetElPosition = targetEl.boundingClientRect;
-              const isElementOnTopScreen = targetElPosition.top < window.innerHeight / 1.5;
-              const isElementOnBottomScreen = targetElPosition.top > document.body.offsetHeight - window.innerHeight / 1.2;
-              const adjustScroll = !isElementOnTopScreen && !isElementOnBottomScreen || isBubbleTop && isElementOnBottomScreen || !isBubbleTop && isElementOnTopScreen;
-              if (adjustScroll) {
-                window.scrollBy(0, isBubbleTop ? window.innerHeight / 2 : window.innerHeight / -2);
-              }
-              
-            } else {
-              // TODO S#7119
-              cb();
-              // utils.scrollIntoView(targetEl, cb);
-            }
-          })
+          utils.scrollIntoView(step.target, cb);
         },
 
         /**
@@ -1786,7 +1663,7 @@
             step = getCurrStep();
 
             goToStepFn = function () {
-              utils.getStepTarget(step).then(function(target) {
+              utils.getStepTarget(step).then(function (target) {
                 if (target) {
                   //this step was previously skipped, but now its target exists,
                   //remove this step from skipped steps set
@@ -1904,7 +1781,7 @@
             currStepNum += direction;
             step = getCurrStep();
 
-            utils.getStepTarget(step).then(function(targetEl) {
+            utils.getStepTarget(step).then(function (targetEl) {
               if (!targetEl.isFound && !wasMultiPage) {
                 utils.invokeEventCallbacks('error');
                 if (origStep.showNextButton) {
@@ -1979,13 +1856,13 @@
           skippedSteps = savedSkippedSteps || {};
           step = getCurrStep();
 
-          utils.getStepTarget(step).then(function(target) {
+          utils.getStepTarget(step).then(function (target) {
             if (target) {
               // First step had an existing target.
               cb(currStepNum);
               return;
             }
-  
+
             if (!target) {
               // Previous target doesn't exist either. The user may have just
               // clicked on a link that wasn't part of the tour. Another possibility is that
@@ -1993,10 +1870,10 @@
               // whatever reason. In either case, we should just advance until we find a step
               // that has a target on the page or end the tour if we can't find such a step.
               utils.invokeEventCallbacks('error');
-  
+
               //this step was skipped, since its target does not exist
               skippedSteps[currStepNum] = true;
-  
+
               if (getOption('skipIfNoElement')) {
                 goToStepWithTarget(1, cb);
                 return;
@@ -2147,7 +2024,7 @@
             return;
           }
 
-          utils.getStepTarget(currTour.steps[stepNum]).then(function(target) {
+          utils.getStepTarget(currTour.steps[stepNum]).then(function (target) {
             if (!target.isFound) {
               // Should we trigger onEnd callback? Let's err on the side of caution
               // and not trigger it. Don't want weird stuff happening on a page that
@@ -2155,17 +2032,17 @@
               self.endTour(false, false);
               return;
             }
-  
+
             utils.invokeEventCallbacks('start');
-  
+
             bubble = getBubble();
             // TODO: do we still need this call to .hide()? No longer using opt.animate...
             // Leaving it in for now to play it safe
             bubble.hide(false); // make invisible for boundingRect calculations when opt.animate == true
-  
+
             self.isActive = true;
-  
-            utils.getStepTarget(getCurrStep()).then(function(currentTarget) {
+
+            utils.getStepTarget(getCurrStep()).then(function (currentTarget) {
               if (!currentTarget.isFound) {
                 // First step element doesn't exist
                 utils.invokeEventCallbacks('error');
@@ -2194,21 +2071,21 @@
         var step = currTour.steps[stepNum],
           prevStepNum = currStepNum;
 
-          utils.getStepTarget(step).then(function(target) {
-            if (!target.isFound) {
-              currStepNum = stepNum;
-              utils.invokeEventCallbacks('error');
-              currStepNum = prevStepNum;
-              return;
-            }
-            if (step.delay) {
-              setTimeout(function () {
-                showStepHelper(stepNum);
-              }, step.delay);
-            } else {
+        utils.getStepTarget(step).then(function (target) {
+          if (!target.isFound) {
+            currStepNum = stepNum;
+            utils.invokeEventCallbacks('error');
+            currStepNum = prevStepNum;
+            return;
+          }
+          if (step.delay) {
+            setTimeout(function () {
               showStepHelper(stepNum);
-            }
-          });
+            }, step.delay);
+          } else {
+            showStepHelper(stepNum);
+          }
+        });
         return this;
       };
 
