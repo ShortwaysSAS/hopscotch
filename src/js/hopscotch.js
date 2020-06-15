@@ -1164,6 +1164,7 @@
       },
 
       show: function () {
+        if(this.isShowing) return this;
         this.isShowing = true;
         var self = this,
           fadeClass = 'fade-in-' + this._getArrowDirection(),
