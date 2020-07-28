@@ -768,7 +768,7 @@
        */
       splitTargetChain: function (targets) {
         return targets.split('//://').map(function (element) {
-          return element.replace(':contains(', ':not([class*="hopscotch-bubble"]):contains(')
+          return element.replace(':contains(', ':not([class*="hopscotch-"]):contains(')
         });
       },
 
